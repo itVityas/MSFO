@@ -3,9 +3,9 @@ from django.db import models
 
 class EGIL(models.Model):
     data = models.DateField('Data')
-    month_index = models.FloatField('Month index')
-    year_index = models.FloatField('Year index')
-    start_hyper_index = models.FloatField('Start hyperinflation index')
+    month_index = models.FloatField('Month index', blank=True)
+    year_index = models.FloatField('Year index', blank=True)
+    start_hyper_index = models.FloatField('Start hyperinflation index', blank= True)
     hyper_index = models.FloatField('Index for hyperinflation')
 
 
