@@ -21,9 +21,9 @@ def write_ig2014(path):
     flag = True
     while flag:
         date, month_index, year_index, start_hyper_index, hyper_index, flag = read_ig2014(x, wb)
-        q = EGIL(data=date, month_index=month_index, year_index=year_index, start_hyper_index=start_hyper_index,
-                 hyper_index=hyper_index)
-        q.save()
+        EGIL.objects.create(data=date, month_index=month_index, year_index=year_index,
+                            start_hyper_index=start_hyper_index, hyper_index=hyper_index)
         x += 1
+    wb.close()
     return
 
