@@ -11,7 +11,6 @@ class EGIL(models.Model):
 
 class Bill(models.Model):
     name = models.CharField('Bill name', max_length=255)
-    numbers = models.IntegerField('Bill number')
 
     def __str__(self):
         return f"{self.name}"
@@ -19,7 +18,7 @@ class Bill(models.Model):
 
 class Store(models.Model):
     name = models.CharField('Store name', max_length=255)
-    numbers = models.IntegerField('Store number')
+    numbers = models.CharField('Store number', max_length=255)
 
     def __str__(self):
         return f"{self.name}"
