@@ -14,7 +14,6 @@ def get_or_create_bill(path):
     name = wb_list['A14'].value
     id_bill, created = Bill.objects.get_or_create(name=name)
     workbook.close()
-    print('get_or_create_bill')
     return id_bill
 
 
@@ -23,16 +22,16 @@ def get_or_create_store(line: int, path):
     wb_list = workbook.active
     name = wb_list[f'A{line}'].value
     numbers = wb_list[f'C{line}'].value
+    if numbers is None:
+        raise CellException
     id_store, created = Store.objects.get_or_create(name=name, numbers=numbers)
     workbook.close()
-    print('get_or_create_store')
     return id_store
 
 
 def create_report(name, date_write_off, date_necessity, date_ig2014):
     id_report, created = Report.objects.get_or_create(name=name, date_write_off=date_write_off,
                                                       date_necessity=date_necessity, date_ig2014=date_ig2014)
-    print('create_report')
     return id_report
 
 
@@ -42,7 +41,6 @@ def get_report(name):
     date_write_off = report.date_write_off
     date_necessity = report.date_necessity
     date_ig2014 = report.date_ig2014
-    print('get_report')
     return id_report, date_write_off, date_necessity, date_ig2014
 
 
@@ -54,12 +52,10 @@ def read_material(line: int, path):
     measuring = wb_list[f'D{line}'].value
     article = wb_list[f'E{line}'].value
     workbook.close()
-    print('read_material')
     return name, code, measuring, article
 
 
 def read_date(line: int, path):
-    print('start read_date')
     workbook = load_workbook(f'{path}', read_only=True, data_only=True)
     wb_list = workbook.active
     date = wb_list[f'A{line}'].value
@@ -70,21 +66,17 @@ def read_date(line: int, path):
     count = wb_list[f'H{line + 1}'].value
     workbook.close()
     if (all_price or count) is None:
-        print('read_date exception')
         raise CellException
-    print('read_date')
     return date, all_price, count
 
 
 def date_convert(date: str):
     date_list = date.split('.')
     date = datetime.date(int(date_list[2]), int(date_list[1]), int(date_list[0]))
-    print('date_convert')
     return date
 
 
 def entrance_calculation(date, all_price, count, date_write_off, date_necessity, date_ig2014):
-    print('entrance_calculation')
     price = all_price / count
 
     if date < date_write_off:
@@ -120,7 +112,6 @@ def entrance_calculation(date, all_price, count, date_write_off, date_necessity,
         reserve = cost_msfo
     else:
         reserve = 0
-    print('entrance_calculation')
     return price, write_off, reclass, necessity_reserve, ig2014, cost_msfo, write_up, cost_write_off, reserve
 
 
@@ -128,7 +119,6 @@ def calculate_ig2014(date):
     date = date.replace(day=1)
     egil_obj = EGIL.objects.get(data=date)
     hyper_index = egil_obj.hyper_index
-    print('calculate_ig2014')
     return hyper_index
 
 
@@ -138,10 +128,12 @@ def write_all_date(path, report_name):
     id_bill = get_or_create_bill(path)
     flag_bill = True
     while flag_bill:
-        id_store = get_or_create_store(line, path)
+        try:
+            id_store = get_or_create_store(line, path)
+        except CellException:
+            break
         line += 2
-        flag_store = True
-        while flag_store:
+        while True:
             name, code, measuring, article = read_material(line, path)
             if article is None:
                 break
@@ -174,4 +166,5 @@ def write_all_date(path, report_name):
 create_report(name='2023', date_write_off=datetime.date(2013, 12, 31),
               date_necessity=datetime.date(2020, 12, 31),
               date_ig2014=datetime.date(2015, 1, 1))
+Material.objects.all().delete()
 write_all_date('/home/foile/MSFO/MSFO/static/xlsx/test1001.xlsx', '2023')
