@@ -27,3 +27,7 @@ def write_ig2014(path):
     wb.close()
     return
 
+
+EGIL.objects.all().delete()
+
+write_ig2014('/home/foile/MSFO/MSFO/static/xlsx/IG2014.xlsx')
