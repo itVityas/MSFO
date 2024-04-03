@@ -39,7 +39,6 @@ class Material(models.Model):
     name = models.CharField('Material name', max_length=255)
     code = models.IntegerField('Code material')
     measuring = models.CharField('Measuring', max_length=255)
-    article = models.IntegerField('Article')
 
     def __str__(self):
         return f"{self.name}"
