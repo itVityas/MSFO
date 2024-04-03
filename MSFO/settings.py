@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'adjustment8'
+    'msfo8'
 ]
 
 MIDDLEWARE = [
