@@ -215,3 +215,4 @@ ENV/
 
 /static/xlsx
 /adjustment8/migrations/
+/msfo8/migrations/
