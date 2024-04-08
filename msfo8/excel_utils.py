@@ -130,14 +130,14 @@ def create_ig2014():
     workbook.save('/home/foile/MSFO/MSFO/static/xlsx/egil_data.xlsx')
 
 
-def write_all_date_xlsx(name_list, date, report_name):
+def write_all_date_xlsx(name_list, date, report_name, ):
     workbook = load_workbook('/home/foile/MSFO/MSFO/static/xlsx/IG2014.xlsx')
     sheet = workbook.create_sheet(f'{name_list}')
-    headers = ['1 - Дата остатков', '2 - Склад', '3 - Счет', '4 - Номенклатурный №', '5 - Цена', '6 - Кол-во',
-               '7 - Дата поступления', '8 - Наименование', '9 - Ед.изм.', '10 - Стоимость', '11 - Счет рекласса МСФО',
-               '12 - Списание запасов', '13 - Необходимость формирования резерва', '14 - ИГ 2014',
-               '15 - Стоимость МСФО на 31.12.2021', '16 - Нереализованная ГИ дооценка',
-               '17 - Стоимость списанных материалов', '18 - Резерв МСФО']
+    headers = ['Дата остатков', 'Склад', 'Счет', 'Номенклатурный №', 'Цена', 'Кол-во',
+               'Дата поступления', 'Наименование', 'Ед.изм.', 'Стоимость', 'Счет рекласса МСФО',
+               'Списание запасов', 'Необходимость формирования резерва', 'ИГ 2014',
+               'Стоимость МСФО на 31.12.2021', 'Нереализованная ГИ дооценка',
+               'Стоимость списанных материалов', 'Резерв МСФО']
 
     id_report, date_write_off, date_necessity, date_ig2014 = get_report(report_name)
 
@@ -152,9 +152,9 @@ def write_all_date_xlsx(name_list, date, report_name):
 
     line = 3
     for row_num, entrance in enumerate(entrances, 3):
-        line += 1
         (price, write_off, reclass, necessity_reserve, ig2014, cost_msfo, write_up, cost_write_off,
          reserve) = entrance_create(line)
+        line += 1
         sheet.cell(row=row_num, column=1, value=date)
         sheet.cell(row=row_num, column=2, value=entrance.id_store.numbers)
         sheet.cell(row=row_num, column=3, value=entrance.id_bill.number)
