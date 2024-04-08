@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'adjustment8'
-    'msfo8'
+    'adjustment8',
+    'msfo8',
 ]
 
 MIDDLEWARE = [
