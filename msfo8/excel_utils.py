@@ -1,4 +1,5 @@
 from openpyxl import load_workbook, Workbook
+from openpyxl.styles import PatternFill, Alignment
 import datetime
 from msfo8.models import Bill, Store, Material, Entrance, Report, EGIL
 
@@ -130,24 +131,63 @@ def create_ig2014():
     workbook.save('/home/foile/MSFO/MSFO/static/xlsx/egil_data.xlsx')
 
 
-def write_all_date_xlsx(name_list, date, report_name, ):
+def write_all_date_xlsx(name_list, date, report_name):
     workbook = load_workbook('/home/foile/MSFO/MSFO/static/xlsx/IG2014.xlsx')
-    sheet = workbook.create_sheet(f'{name_list}')
+    wb_list = workbook.create_sheet(f'{name_list}')
+    change_column_wight(wb_list)
+    write_header(wb_list, report_name)
+    write_data(wb_list, date)
+    workbook.save('/home/foile/MSFO/MSFO/static/xlsx/data.xlsx')
+    return
+
+
+def change_column_wight(wb_list):
+    column_widths = {
+        'A': 21.15,
+        'B': 13.43,
+        'C': 12.43,
+        'D': 17.85,
+        'E': 12.71,
+        'F': 10.43,
+        'G': 16.28,
+        'H': 62.71,
+        'I': 8.53,
+        'J': 15.57,
+        'K': 8.53,
+        'L': 12.85,
+        'M': 15.0,
+        'N': 13.71,
+        'O': 14.85,
+        'P': 17.71,
+        'Q': 14.57,
+        'R': 13.43
+    }
+
+    for column, width in column_widths.items():
+        wb_list.column_dimensions[column].width = width
+
+
+def write_header(wb_list, report_name):
+
     headers = ['Дата остатков', 'Склад', 'Счет', 'Номенклатурный №', 'Цена', 'Кол-во',
                'Дата поступления', 'Наименование', 'Ед.изм.', 'Стоимость', 'Счет рекласса МСФО',
                'Списание запасов', 'Необходимость формирования резерва', 'ИГ 2014',
                'Стоимость МСФО на 31.12.2021', 'Нереализованная ГИ дооценка',
                'Стоимость списанных материалов', 'Резерв МСФО']
 
+    for col_num, header in enumerate(headers, 1):
+        wb_list.cell(row=2, column=col_num, value=header)
+        wb_list.fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+        wb_list.alignment = Alignment(horizontal="center")
+
     id_report, date_write_off, date_necessity, date_ig2014 = get_report(report_name)
 
-    sheet.cell(row=1, column=12, value=date_write_off)
-    sheet.cell(row=1, column=13, value=date_necessity)
-    sheet.cell(row=1, column=14, value=date_ig2014)
+    wb_list.cell(row=1, column=12, value=date_write_off)
+    wb_list.cell(row=1, column=13, value=date_necessity)
+    wb_list.cell(row=1, column=14, value=date_ig2014)
 
-    for col_num, header in enumerate(headers, 1):
-        sheet.cell(row=2, column=col_num, value=header)
 
+def write_data(wb_list, date):
     entrances = Entrance.objects.select_related('id_material', 'id_report', 'id_bill', 'id_store')
 
     line = 3
@@ -155,26 +195,24 @@ def write_all_date_xlsx(name_list, date, report_name, ):
         (price, write_off, reclass, necessity_reserve, ig2014, cost_msfo, write_up, cost_write_off,
          reserve) = entrance_create(line)
         line += 1
-        sheet.cell(row=row_num, column=1, value=date)
-        sheet.cell(row=row_num, column=2, value=entrance.id_store.numbers)
-        sheet.cell(row=row_num, column=3, value=entrance.id_bill.number)
-        sheet.cell(row=row_num, column=4, value=entrance.id_material.code)
-        sheet.cell(row=row_num, column=5, value=price)
-        sheet.cell(row=row_num, column=6, value=entrance.count)
-        sheet.cell(row=row_num, column=7, value=entrance.date)
-        sheet.cell(row=row_num, column=8, value=entrance.id_material.name)
-        sheet.cell(row=row_num, column=9, value=entrance.id_material.measuring)
-        sheet.cell(row=row_num, column=10, value=entrance.all_price)
-        sheet.cell(row=row_num, column=11, value=reclass)
-        sheet.cell(row=row_num, column=12, value=write_off)
-        sheet.cell(row=row_num, column=13, value=necessity_reserve)
-        sheet.cell(row=row_num, column=14, value=ig2014)
-        sheet.cell(row=row_num, column=15, value=cost_msfo)
-        sheet.cell(row=row_num, column=16, value=write_up)
-        sheet.cell(row=row_num, column=17, value=cost_write_off)
-        sheet.cell(row=row_num, column=18, value=reserve)
-    workbook.save('/home/foile/MSFO/MSFO/static/xlsx/data.xlsx')
-    return
+        wb_list.cell(row=row_num, column=1, value=date)
+        wb_list.cell(row=row_num, column=2, value=entrance.id_store.numbers)
+        wb_list.cell(row=row_num, column=3, value=entrance.id_bill.number)
+        wb_list.cell(row=row_num, column=4, value=entrance.id_material.code)
+        wb_list.cell(row=row_num, column=5, value=price)
+        wb_list.cell(row=row_num, column=6, value=entrance.count)
+        wb_list.cell(row=row_num, column=7, value=entrance.date)
+        wb_list.cell(row=row_num, column=8, value=entrance.id_material.name)
+        wb_list.cell(row=row_num, column=9, value=entrance.id_material.measuring)
+        wb_list.cell(row=row_num, column=10, value=entrance.all_price)
+        wb_list.cell(row=row_num, column=11, value=reclass)
+        wb_list.cell(row=row_num, column=12, value=write_off)
+        wb_list.cell(row=row_num, column=13, value=necessity_reserve)
+        wb_list.cell(row=row_num, column=14, value=ig2014)
+        wb_list.cell(row=row_num, column=15, value=cost_msfo)
+        wb_list.cell(row=row_num, column=16, value=write_up)
+        wb_list.cell(row=row_num, column=17, value=cost_write_off)
+        wb_list.cell(row=row_num, column=18, value=reserve)
 
 
 create_report(name='2023', date_write_off=datetime.date(2013, 12, 31),
