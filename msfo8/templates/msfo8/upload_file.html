@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Загрузка файлов</title>
+</head>
+<body>
+    <h1>Загрузка файлов</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file1">Файл 1:</label>
+        <input type="file" name="file1" id="file1" required>
+        <br><br>
+        <label for="file2">Файл 2:</label>
+        <input type="file" name="file2" id="file2" required>
+        <br><br>
+        <label for="name">Имя:</label>
+        <input type="text" name="name" id="name" required>
+        <br><br>
+        <input type="submit" value="Загрузить">
+    </form>
+</body>
+</html>
