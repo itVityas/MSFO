@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 
 class EGIL(models.Model):
@@ -53,3 +54,10 @@ class Entrance(models.Model):
     date = models.DateField('Receipt date')
     count = models.DecimalField('Count', max_digits=10, decimal_places=2)
     all_price = models.DecimalField('Cost', max_digits=15, decimal_places=2)
+
+
+class Files(models.Model):
+    name = models.CharField('Name', max_length=255)
+    file1 = models.FileField(upload_to=f'static/xlsx/', blank=False, null=False)
+    file2 = models.FileField(upload_to=f'static/xlsx/', blank=False, null=False)
+    result_file = models.FileField(upload_to=f'static/xlsx/', blank=True, null=True)
