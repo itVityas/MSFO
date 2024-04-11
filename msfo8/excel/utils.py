@@ -101,11 +101,11 @@ def write_all_date_bd(path, report_name):
     return
 
 
-create_report(name='2023', date_write_off=datetime.date(2013, 12, 31),
-              date_necessity=datetime.date(2020, 12, 31),
+create_report(name='2023', date_write_off=datetime.date(2017, 1, 1),
+              date_necessity=datetime.date(2021, 12, 31),
               date_ig2014=datetime.date(2015, 1, 1))
 
-Material.objects.all().delete()
-Store.objects.all().delete()
-write_all_date_bd('/home/foile/MSFO/MSFO/static/xlsx/test1001.xlsx', '2023')
-write_all_date_bd('/home/foile/MSFO/MSFO/static/xlsx/test1002.xlsx', '2023')
+# Material.objects.all().delete()
+# Store.objects.all().delete()
+# write_all_date_bd('/home/foile/MSFO/MSFO/static/xlsx/test1001.xlsx', '2023')
+# write_all_date_bd('/home/foile/MSFO/MSFO/static/xlsx/test1002.xlsx', '2023')
