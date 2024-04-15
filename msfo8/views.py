@@ -1,9 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Files, Material, Store
-from django.conf import settings
 from msfo8.excel.utils import write_all_date_bd
 from msfo8.excel.excel_write import write_all_date
-import os
 
 
 def home(request):

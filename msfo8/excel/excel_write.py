@@ -25,7 +25,7 @@ def entrance_create(line):
     write_off = f'=IF(G{line}<$L$1,"списываем","не списываем")'
     reclass = f'=IF(L{line}="списываем",4.104,1.403)'
     necessity_reserve = f'=IF(AND($M$1>G{line},L{line}="не списываем"),"да","нет")'
-    ig2014 = f'=IF($N$1<G{line},1,VLOOKUP(G{line},$ИГ2014.$G$7:$H$295,2,1))'
+    ig2014 = f'=IF($N$1<G{line},1,VLOOKUP(G{line},ИГ2014!$G$7:$H$295,2,1))'
     cost_msfo = f'=IF(L{line}="списываем",0,N{line}*J{line})'
     write_up = f'=IF(L{line}="не списываем",O{line}-J{line},0)'
     cost_write_off = f'=IF(L{line}="списываем",J{line}-O{line},0)'
