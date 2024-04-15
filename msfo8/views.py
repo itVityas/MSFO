@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
 from .models import Files, Material, Store
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from msfo8.excel.utils import write_all_date_bd
 from msfo8.excel.excel_write import write_all_date
+from time import strftime
+
 
 
 def home(request):
@@ -10,6 +14,7 @@ def home(request):
 
 def upload_files(request):
     if request.method == 'POST':
+        redirect('home')
         name = request.POST.get('name')
         file1 = request.FILES.get('file1')
         file2 = request.FILES.get('file2')
@@ -31,7 +36,22 @@ def success(request, **kwargs):
     Store.objects.all().delete()
     write_all_date_bd(f'{path1}', '2023')
     write_all_date_bd(f'{path2}', '2023')
-    write_all_date('2023', '2023')
-    files.result_file = '/home/foile/MSFO/MSFO/static/xlsx/data.xlsx'
+    wb_path = write_all_date('2023', '2023')
+    files.result_file = wb_path
     files.save()
     return render(request, 'msfo8/success.html', {'files': files})
+
+
+def download_file(request, id):
+    files = get_object_or_404(Files, id=id)
+
+    if files.result_file:
+        with files.result_file.open('rb') as file:
+            file_content = file.read()
+
+        content_type = 'application/octet-stream'
+        response = HttpResponse(file_content, content_type=content_type)
+        response['Content-Disposition'] = 'attachment; filename="result_file.xlsx"'
+        return response
+    else:
+        return HttpResponse('File not found.')
