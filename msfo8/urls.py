@@ -7,4 +7,5 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('upload_files', views.upload_files, name='upload_files'),
     path('success/<int:id>', views.success, name='success'),
+    path('download/<int:id>/', views.download_file, name='download_file'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

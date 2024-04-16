@@ -1,3 +1,5 @@
+import datetime
+
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import PatternFill, Alignment, Font
 from msfo8.models import Entrance, EGIL
@@ -25,7 +27,7 @@ def entrance_create(line):
     write_off = f'=IF(G{line}<$L$1,"списываем","не списываем")'
     reclass = f'=IF(L{line}="списываем",4.104,1.403)'
     necessity_reserve = f'=IF(AND($M$1>G{line},L{line}="не списываем"),"да","нет")'
-    ig2014 = f'=IF($N$1<G{line},1,VLOOKUP(G{line},$ИГ2014.$G$7:$H$295,2,1))'
+    ig2014 = f'=IF($N$1<G{line},1,VLOOKUP(G{line},ИГ2014!$G$7:$H$295,2,1))'
     cost_msfo = f'=IF(L{line}="списываем",0,N{line}*J{line})'
     write_up = f'=IF(L{line}="не списываем",O{line}-J{line},0)'
     cost_write_off = f'=IF(L{line}="списываем",J{line}-O{line},0)'
@@ -57,6 +59,7 @@ def change_column_wight(wb_list):
 
     for column, width in column_widths.items():
         wb_list.column_dimensions[column].width = width
+    wb_list.row_dimensions[2].height = 30
 
 
 def change_font(wb_list):
@@ -75,9 +78,9 @@ def write_header(wb_list, report_name):
                'Стоимость списанных материалов', 'Резерв МСФО']
 
     for col_num, header in enumerate(headers, 1):
-        cell = wb_list.cell(row=2, column=col_num, value=header)
+        cell = wb_list.cell(row=2, column=col_num, value=header, )
         # cell.fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
-        cell.alignment = Alignment(horizontal="center")
+        cell.alignment = Alignment(horizontal="center", vertical='center', wrap_text=True)
 
     id_report, date_write_off, date_necessity, date_ig2014 = get_report(report_name)
 
@@ -113,6 +116,12 @@ def write_data(wb_list, date, num_store):
         wb_list.cell(row=row_num, column=16, value=write_up)
         wb_list.cell(row=row_num, column=17, value=cost_write_off)
         wb_list.cell(row=row_num, column=18, value=reserve)
+    wb_list.cell(row=line, column=8, value='Итого:')
+    wb_list.cell(row=line, column=10, value=f'=SUM(J3:J{line-1})')
+    wb_list.cell(row=line, column=15, value=f'=SUM(O3:O{line-1})')
+    wb_list.cell(row=line, column=16, value=f'=SUM(P3:P{line-1})')
+    wb_list.cell(row=line, column=17, value=f'=SUM(Q3:Q{line-1})')
+    wb_list.cell(row=line, column=18, value=f'=SUM(R3:R{line-1})')
 
 
 def write_bill(workbook, num_bill, date, report_name):
@@ -128,8 +137,10 @@ def write_all_date(date, report_name):
     workbook = load_workbook('/home/foile/MSFO/MSFO/static/xlsx/1/IG2014.xlsx')
     write_bill(workbook, 1001, date, report_name)
     write_bill(workbook, 1002, date, report_name)
-    workbook.save('/home/foile/MSFO/MSFO/static/xlsx/data.xlsx')
-    return
+    datetime_now = datetime.datetime.now()
+    wb_path = datetime_now.strftime(f'/home/foile/MSFO/MSFO/static/xlsx/%Y-%m-%d/data - %H:%M:%S.xlsx')
+    workbook.save(wb_path)
+    return wb_path
 
 
 # write_all_date('2023', '2023')

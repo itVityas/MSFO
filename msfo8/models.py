@@ -1,5 +1,7 @@
 from django.db import models
+from time import strftime
 from datetime import datetime
+import os
 
 
 class EGIL(models.Model):
@@ -39,7 +41,7 @@ class Report(models.Model):
 
 class Material(models.Model):
     name = models.CharField('Material name', max_length=255)
-    code = models.IntegerField('Code material')
+    code = models.DecimalField('Code material', max_digits=20, decimal_places=0)
     measuring = models.CharField('Measuring', max_length=20)
 
     def __str__(self):
@@ -58,6 +60,7 @@ class Entrance(models.Model):
 
 class Files(models.Model):
     name = models.CharField('Name', max_length=255)
-    file1 = models.FileField(upload_to=f'static/xlsx/', blank=False, null=False)
-    file2 = models.FileField(upload_to=f'static/xlsx/', blank=False, null=False)
-    result_file = models.FileField(upload_to=f'static/xlsx/', blank=True, null=True)
+    file1 = models.FileField(upload_to=f'static/xlsx/%Y-%m-%d', blank=False, null=False)
+    file2 = models.FileField(upload_to=f'static/xlsx/%Y-%m-%d', blank=False, null=False)
+    result_file = models.FileField(upload_to=f'static/xlsx/%Y-%m-%d', blank=True, null=True)
+
