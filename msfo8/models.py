@@ -41,7 +41,7 @@ class Report(models.Model):
 
 class Material(models.Model):
     name = models.CharField('Material name', max_length=255)
-    code = models.IntegerField('Code material')
+    code = models.DecimalField('Code material', max_digits=20, decimal_places=0)
     measuring = models.CharField('Measuring', max_length=20)
 
     def __str__(self):

@@ -119,9 +119,9 @@ def write_data(wb_list, date, num_store):
     wb_list.cell(row=line, column=8, value='Итого:')
     wb_list.cell(row=line, column=10, value=f'=SUM(J3:J{line-1})')
     wb_list.cell(row=line, column=15, value=f'=SUM(O3:O{line-1})')
-    wb_list.cell(row=line, column=15, value=f'=SUM(P3:P{line-1})')
-    wb_list.cell(row=line, column=15, value=f'=SUM(Q3:Q{line-1})')
-    wb_list.cell(row=line, column=15, value=f'=SUM(R3:R{line-1})')
+    wb_list.cell(row=line, column=16, value=f'=SUM(P3:P{line-1})')
+    wb_list.cell(row=line, column=17, value=f'=SUM(Q3:Q{line-1})')
+    wb_list.cell(row=line, column=18, value=f'=SUM(R3:R{line-1})')
 
 
 def write_bill(workbook, num_bill, date, report_name):

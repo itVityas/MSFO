@@ -4,8 +4,6 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from msfo8.excel.utils import write_all_date_bd
 from msfo8.excel.excel_write import write_all_date
-from time import strftime
-
 
 
 def home(request):
