@@ -134,7 +134,7 @@ def write_bill(workbook, num_bill, date, report_name):
 
 
 def write_all_date(date, report_name):
-    workbook = load_workbook('/home/foile/MSFO/MSFO/static/xlsx/1/IG2014.xlsx')
+    workbook = load_workbook('/home/foile/MSFO/MSFO/static/IG2014.xlsx')
     write_bill(workbook, 1001, date, report_name)
     write_bill(workbook, 1002, date, report_name)
     datetime_now = datetime.datetime.now()
