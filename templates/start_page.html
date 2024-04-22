@@ -1,10 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-    <title>Start page</title>
+    Start page
 {% endblock %}
 
 {% block body %}
     <h1>Start page</h1>
-    <a href="/msfo8/">Перейти на страницу MSFO8</a>
+    <a href="{% url 'home_msfo8' %}">Корректировка 8</a><br>
 {% endblock %}
