@@ -1,7 +1,5 @@
 from django.db import models
-from time import strftime
-from datetime import datetime
-import os
+import datetime
 
 
 class EGIL(models.Model):
@@ -31,9 +29,11 @@ class Store(models.Model):
 
 class Report(models.Model):
     name = models.CharField('Report name', max_length=20)
-    date_write_off = models.DateField('Date write off')
+    date_write_off = models.DateField('Date write off',
+                                      default=datetime.date(2017, 1, 1))
     date_necessity = models.DateField('Date necessity')
-    date_ig2014 = models.DateField('Date IG2014')
+    date_ig2014 = models.DateField('Date IG2014',
+                                   default=datetime.date(2015, 1, 1))
 
     def __str__(self):
         return f"{self.name}"
@@ -63,4 +63,3 @@ class Files(models.Model):
     file1 = models.FileField(upload_to=f'static/xlsx/%Y-%m-%d', blank=False, null=False)
     file2 = models.FileField(upload_to=f'static/xlsx/%Y-%m-%d', blank=False, null=False)
     result_file = models.FileField(upload_to=f'static/xlsx/%Y-%m-%d', blank=True, null=True)
-
