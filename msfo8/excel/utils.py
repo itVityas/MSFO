@@ -100,7 +100,7 @@ def write_all_date_bd(path, report_name):
     return
 
 
-create_report(name='2023', date_necessity=datetime.date(2021, 12, 31))
+# create_report(name='2023', date_necessity=datetime.date(2021, 12, 31))
 
 # Material.objects.all().delete()
 # Store.objects.all().delete()
