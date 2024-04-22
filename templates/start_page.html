@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Start page</title>
-</head>
-<body>
+{% extends 'layout.html' %}
+
+{% block title %}
+    Start page
+{% endblock %}
+
+{% block body %}
     <h1>Start page</h1>
-    <a href="/msfo8/">Перейти на страницу MSFO8</a>
-</body>
-</html>
+    <a href="{% url 'home_msfo8' %}">Корректировка 8</a><br>
+{% endblock %}

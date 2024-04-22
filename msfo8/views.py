@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from .models import Files, Material, Store
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from msfo8.excel.utils import write_all_date_bd
+from django.contrib import messages
+from msfo8.excel.utils import write_all_date_bd, create_report
 from msfo8.excel.excel_write import write_all_date
+import datetime
 import shutil
 import os
 
@@ -14,14 +16,21 @@ def home(request):
 
 def upload_files(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        file1 = request.FILES.get('file1')
-        file2 = request.FILES.get('file2')
 
-        files = Files(name=name, file1=file1, file2=file2)
-        files.save()
+        try:
+            year_report = int(request.POST.get('year_report'))
+            if 1980 > year_report > 2100:
+                raise TypeError
+            file1 = request.FILES.get('file1')
+            file2 = request.FILES.get('file2')
+            create_report(name=year_report, date_necessity=datetime.date(year_report-2, 12, 31))
+            files = Files(name=year_report, file1=file1, file2=file2)
+            files.save()
+            return redirect('success', id=files.id)
 
-        return redirect('success', id=files.id)
+        except ValueError:
+            messages.success(request, 'Введите корректный год отчета')
+            return redirect('upload_files')
 
     return render(request, 'msfo8/upload_files.html')
 

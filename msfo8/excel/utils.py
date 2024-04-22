@@ -24,9 +24,8 @@ def get_or_create_store(line: int, wb_list):
     return id_store
 
 
-def create_report(name, date_write_off, date_necessity, date_ig2014):
-    id_report, created = Report.objects.get_or_create(name=name, date_write_off=date_write_off,
-                                                      date_necessity=date_necessity, date_ig2014=date_ig2014)
+def create_report(name, date_necessity):
+    id_report, created = Report.objects.get_or_create(name=name, date_necessity=date_necessity)
     return id_report
 
 
@@ -101,9 +100,7 @@ def write_all_date_bd(path, report_name):
     return
 
 
-create_report(name='2023', date_write_off=datetime.date(2017, 1, 1),
-              date_necessity=datetime.date(2021, 12, 31),
-              date_ig2014=datetime.date(2015, 1, 1))
+# create_report(name='2023', date_necessity=datetime.date(2021, 12, 31))
 
 # Material.objects.all().delete()
 # Store.objects.all().delete()

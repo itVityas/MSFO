@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Формирование отчета</title>
-</head>
-<body>
+{% extends 'layout.html' %}
+
+{% block title %}
+    Формирование отчета
+{% endblock %}
+
+{% block body %}
     <h1>Формирование отчета</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -14,12 +14,11 @@
         <label for="file2">Файл 2:</label>
         <input type="file" name="file2" id="file2" required>
         <br><br>
-        <label for="name">Имя:</label>
-        <input type="text" name="name" id="name" required>
+        <label for="year_report">Год отчета:</label>
+        <input type="text" name="year_report" id="year_report" required>
         <br><br>
         <input type="submit" value="Загрузить">
-    </form><br>
-    <a href="../">Корректировка 8</a><br>
-    <a href="../../">На стартовую страницу</a><br>
-</body>
-</html>
+    </form><br><br>
+    <a href="{% url 'home_msfo8' %}">Корректировка 8</a><br>
+    <a href="{% url 'start_page' %}">На стартовую страницу</a><br>
+{% endblock %}
