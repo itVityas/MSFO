@@ -69,6 +69,7 @@ class Files(models.Model):
     file1 = models.FileField(upload_to=f'static/xlsx/%Y-%m-%d', blank=False, null=False)
     file2 = models.FileField(upload_to=f'static/xlsx/%Y-%m-%d', blank=False, null=False)
     result_file = models.FileField(upload_to=f'static/xlsx/%Y-%m-%d', blank=True, null=True)
+    created_at = models.DateTimeField('Time creation', auto_now_add=True)
 
     def __str__(self):
         return f"{self.name}, {self.result_file}"

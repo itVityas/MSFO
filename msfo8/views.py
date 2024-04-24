@@ -20,7 +20,7 @@ def upload_files(request):
         try:
             year_report = int(request.POST.get('year_report'))
             if 1980 > year_report > 2100:
-                raise TypeError
+                raise ValueError
             file1 = request.FILES.get('file1')
             file2 = request.FILES.get('file2')
             create_report(name=year_report, date_necessity=datetime.date(year_report-2, 12, 31))
@@ -71,5 +71,15 @@ def delete_all_reports(request):
         directory = 'static/xlsx'
         shutil.rmtree(directory, ignore_errors=True)
         os.makedirs(directory)
-        return redirect('home')
+        return render(request, 'msfo8/home.html')
     return render(request, 'msfo8/delete_all_reports.html')
+
+
+def files_list(request):
+    files = Files.objects.all()
+    return render(request, 'msfo8/files_list.html', {'files': files})
+
+
+def file_detail(request, id):
+    file = get_object_or_404(Files, id=id)
+    return render(request, 'msfo8/file_detail.html', {'file': file})
