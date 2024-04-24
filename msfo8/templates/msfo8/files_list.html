@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'msfo8/layout_msfo8.html' %}
 
 {% block title %}
     Files List
@@ -10,7 +10,5 @@
         {% for file in files %}
         <li><a href="{% url 'file_detail' file.pk %}">{{ file.name }}</a> (Created at: {{ file.created_at }})</li>
         {% endfor %}
-    </ul><br><br>
-    <a href="{% url 'home_msfo8' %}">Корректировка 8</a><br>
-    <a href="{% url 'start_page' %}">На стартовую страницу</a><br>
+    </ul>
 {% endblock %}

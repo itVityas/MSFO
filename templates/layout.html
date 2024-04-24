@@ -3,7 +3,8 @@
 <head>
 
     <meta charset="UTF-8">
-
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
     <title>
             {% block title %}
             {% endblock %}
@@ -23,8 +24,12 @@
             </ul>
         {% endif %}
     </messages>
-
-
+    
+    <urls>
+    {% block urls %}
+    {% endblock %}
+    </urls>
+    
     <main>
         {% block body %}
         {% endblock %}

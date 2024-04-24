@@ -82,4 +82,10 @@ def files_list(request):
 
 def file_detail(request, id):
     file = get_object_or_404(Files, id=id)
+
+    if request.method == 'POST':
+        file.delete()
+        messages.success(request, 'Отчет успешно удален.')
+        return redirect('files_list')
+
     return render(request, 'msfo8/file_detail.html', {'file': file})

@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'msfo8/layout_msfo8.html' %}
 
 {% block title %}
     Формирование отчета
@@ -18,7 +18,5 @@
         <input type="text" name="year_report" id="year_report" required>
         <br><br>
         <input type="submit" value="Загрузить">
-    </form><br><br>
-    <a href="{% url 'home_msfo8' %}">Корректировка 8</a><br>
-    <a href="{% url 'start_page' %}">На стартовую страницу</a><br>
+    </form>
 {% endblock %}

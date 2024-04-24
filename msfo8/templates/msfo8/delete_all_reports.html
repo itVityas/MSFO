@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'msfo8/layout_msfo8.html' %}
 
 {% block title %}
     Удаление
@@ -9,7 +9,5 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="submit" value="Удалить все отчеты">
-    </form><br><br>
-    <a href="../">Корректировка 8</a><br>
-    <a href="../../">На стартовую страницу</a><br>
+    </form>
 {% endblock %}
