@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Files List
+{% endblock %}
+
+{% block body %}
+    <h1>Files List</h1>
+    <ul>
+        {% for file in files %}
+        <li><a href="{% url 'file_detail' file.pk %}">{{ file.name }}</a> (Created at: {{ file.created_at }})</li>
+        {% endfor %}
+    </ul><br><br>
+    <a href="{% url 'home_msfo8' %}">Корректировка 8</a><br>
+    <a href="{% url 'start_page' %}">На стартовую страницу</a><br>
+{% endblock %}
