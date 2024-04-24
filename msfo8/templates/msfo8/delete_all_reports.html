@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+{% extends 'layout.html' %}
+
+{% block title %}
     <title>Удаление</title>
-</head>
-<body>
+{% endblock %}
+
+{% block body %}
     <h1>Удаление всех отчетов</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -12,6 +12,4 @@
     </form><br><br>
     <a href="../">Корректировка 8</a><br>
     <a href="../../">На стартовую страницу</a><br>
-
-</body>
-</html>
+{% endblock %}
