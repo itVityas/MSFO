@@ -19,13 +19,14 @@ def upload_files(request):
 
         try:
             year_report = int(request.POST.get('year_report'))
-            if 1980 > year_report > 2100:
+            if 1980 > year_report or 2100 < year_report:
                 raise ValueError
             file1 = request.FILES.get('file1')
             file2 = request.FILES.get('file2')
             create_report(name=year_report, date_necessity=datetime.date(year_report-2, 12, 31))
-            files = Files(name=year_report, file1=file1, file2=file2)
+            files = Files(year=year_report, file1=file1, file2=file2)
             files.save()
+
             return redirect('success', id=files.id)
 
         except ValueError:

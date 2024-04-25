@@ -6,7 +6,7 @@
 
 {% block body %}
     <h1>Отчет</h1>
-    <p>Год отчета: {{ file.name }}</p>
+    <p>Год отчета: {{ file.year }}</p>
     {% if file.result_file %}
     <p>Файл отчета: <a href="{% url 'download_file' file.id %}">{{ file.result_file.name }}</a></p>
     {% else %}
