@@ -8,7 +8,7 @@
     <h1>Files List</h1>
     <ul>
         {% for file in files %}
-        <li><a href="{% url 'file_detail' file.pk %}">{{ file.name }}</a> (Created at: {{ file.created_at }})</li>
+        <li><a href="{% url 'file_detail' file.pk %}">{{ file.year }}</a> (Created at: {{ file.created_at }})</li>
         {% endfor %}
     </ul>
 {% endblock %}
