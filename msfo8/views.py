@@ -21,12 +21,30 @@ def upload_files(request):
             year_report = int(request.POST.get('year_report'))
             if 1980 > year_report or 2100 < year_report:
                 raise ValueError
+
             file1 = request.FILES.get('file1')
             file2 = request.FILES.get('file2')
-            create_report(name=year_report, date_necessity=datetime.date(year_report-2, 12, 31))
-            files = Files(year=year_report, file1=file1, file2=file2)
-            files.save()
 
+            path1 = os.path.join('static', 'xlsx', 'file1.xlsx')
+            with open(path1, 'wb') as file:
+                for chunk in file1.chunks():
+                    file.write(chunk)
+
+            path2 = os.path.join('static', 'xlsx', 'file2.xlsx')
+            with open(path2, 'wb') as file:
+                for chunk in file2.chunks():
+                    file.write(chunk)
+
+            Material.objects.all().delete()
+            Store.objects.all().delete()
+
+            create_report(name=year_report, date_necessity=datetime.date(year_report-2, 12, 31))
+            write_all_date_bd(f'{path1}', f'{year_report}')
+            write_all_date_bd(f'{path2}', f'{year_report}')
+
+            wb_path = write_all_date(f'{year_report}', f'{year_report}')
+            files = Files(year=year_report, result_file=wb_path)
+            files.save()
             return redirect('success', id=files.id)
 
         except ValueError:
@@ -39,15 +57,6 @@ def upload_files(request):
 def success(request, **kwargs):
     object_id = kwargs.get('id')
     files = Files.objects.get(id=object_id)
-    path1 = files.file1
-    path2 = files.file2
-    Material.objects.all().delete()
-    Store.objects.all().delete()
-    write_all_date_bd(f'{path1}', '2023')
-    write_all_date_bd(f'{path2}', '2023')
-    wb_path = write_all_date('2023', '2023')
-    files.result_file = wb_path
-    files.save()
     return render(request, 'msfo8/download.html', {'files': files})
 
 

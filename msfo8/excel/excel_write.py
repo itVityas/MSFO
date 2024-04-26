@@ -1,7 +1,6 @@
 import datetime
-
-from openpyxl import load_workbook, Workbook
-from openpyxl.styles import PatternFill, Alignment, Font
+from openpyxl import load_workbook, Workbook, utils
+from openpyxl.styles import PatternFill, Alignment, Font, numbers
 from msfo8.models import Entrance, EGIL
 from msfo8.excel.utils import get_report
 
@@ -69,6 +68,15 @@ def change_font(wb_list):
             cell.font = font
 
 
+def change_number_format(wb_list, end_row):
+    columns = [5, 6, 10, 15, 16, 17, 18]
+    for row in range(3, end_row + 1):
+        for column in columns:
+            cell = wb_list.cell(row=row, column=column)
+            cell.number_format = numbers.FORMAT_NUMBER_00
+    return
+
+
 def write_header(wb_list, report_name):
 
     headers = ['Дата остатков', 'Склад', 'Счет', 'Номенклатурный №', 'Цена', 'Кол-во',
@@ -122,6 +130,7 @@ def write_data(wb_list, date, num_store):
     wb_list.cell(row=line, column=16, value=f'=SUM(P3:P{line-1})')
     wb_list.cell(row=line, column=17, value=f'=SUM(Q3:Q{line-1})')
     wb_list.cell(row=line, column=18, value=f'=SUM(R3:R{line-1})')
+    change_number_format(wb_list, line)
 
 
 def write_bill(workbook, num_bill, date, report_name):
@@ -138,7 +147,7 @@ def write_all_date(date, report_name):
     write_bill(workbook, 1001, date, report_name)
     write_bill(workbook, 1002, date, report_name)
     datetime_now = datetime.datetime.now()
-    wb_path = datetime_now.strftime(f'/home/foile/MSFO/MSFO/static/xlsx/%Y-%m-%d/data - %H:%M:%S.xlsx')
+    wb_path = datetime_now.strftime(f'/home/foile/MSFO/MSFO/static/xlsx/data - %H:%M:%S.xlsx')
     workbook.save(wb_path)
     return wb_path
 
