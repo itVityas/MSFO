@@ -147,7 +147,7 @@ def write_all_date(date, report_name):
     write_bill(workbook, 1001, date, report_name)
     write_bill(workbook, 1002, date, report_name)
     datetime_now = datetime.datetime.now()
-    wb_path = datetime_now.strftime(f'/home/foile/MSFO/MSFO/static/xlsx/%Y-%m-%d/data - %H:%M:%S.xlsx')
+    wb_path = datetime_now.strftime(f'/home/foile/MSFO/MSFO/static/xlsx/data - %H:%M:%S.xlsx')
     workbook.save(wb_path)
     return wb_path
 
