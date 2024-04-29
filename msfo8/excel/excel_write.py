@@ -3,6 +3,8 @@ from openpyxl import load_workbook, Workbook, utils
 from openpyxl.styles import PatternFill, Alignment, Font, numbers
 from msfo8.models import Entrance, EGIL
 from msfo8.excel.utils import get_report
+from django.conf import settings
+import os
 
 
 def create_ig2014():
@@ -18,7 +20,8 @@ def create_ig2014():
         sheet.cell(row=row_num, column=3, value=egil_object.year_index)
         sheet.cell(row=row_num, column=4, value=egil_object.start_hyper_index)
         sheet.cell(row=row_num, column=5, value=egil_object.hyper_index)
-    workbook.save('/home/foile/MSFO/MSFO/static/xlsx/egil_data.xlsx')
+    file_path = os.path.join(settings.BASE_DIR, 'static', 'xlsx', 'egil_data.xlsx')
+    workbook.save(file_path)
 
 
 def entrance_create(line):
@@ -74,7 +77,6 @@ def change_number_format(wb_list, end_row):
         for column in columns:
             cell = wb_list.cell(row=row, column=column)
             cell.number_format = numbers.FORMAT_NUMBER_00
-    return
 
 
 def write_header(wb_list, report_name):
@@ -139,15 +141,16 @@ def write_bill(workbook, num_bill, date, report_name):
     write_header(wb_list, report_name)
     write_data(wb_list, date, num_bill)
     change_font(wb_list)
-    return
 
 
 def write_all_date(date, report_name):
-    workbook = load_workbook('/home/foile/MSFO/MSFO/static/IG2014.xlsx')
+    workbook_path = os.path.join(settings.BASE_DIR, 'static', 'IG2014.xlsx')
+    workbook = load_workbook(workbook_path)
     write_bill(workbook, 1001, date, report_name)
     write_bill(workbook, 1002, date, report_name)
     datetime_now = datetime.datetime.now()
-    wb_path = datetime_now.strftime(f'/home/foile/MSFO/MSFO/static/xlsx/data - %H:%M:%S.xlsx')
+    wb_filename = datetime_now.strftime('data - %H:%M:%S.xlsx')
+    wb_path = os.path.join(settings.BASE_DIR, 'static', 'xlsx', wb_filename)
     workbook.save(wb_path)
     return wb_path
 
