@@ -8,7 +8,7 @@ from msfo8.excel.excel_write import write_all_date
 import datetime
 import shutil
 import os
-
+from msfo8.tasks import crete_report_task
 
 def home(request):
     return render(request, 'msfo8/home.html')
@@ -35,17 +35,9 @@ def upload_files(request):
                 for chunk in file2.chunks():
                     file.write(chunk)
 
-            Material.objects.all().delete()
-            Store.objects.all().delete()
+            crete_report_task.delay(year_report)
 
-            create_report(name=year_report, date_necessity=datetime.date(year_report-2, 12, 31))
-            write_all_date_bd(f'{path1}', f'{year_report}')
-            write_all_date_bd(f'{path2}', f'{year_report}')
-
-            wb_path = write_all_date(f'{year_report}', f'{year_report}')
-            files = Files(year=year_report, result_file=wb_path)
-            files.save()
-            return redirect('success', id=files.id)
+            return render(request, 'msfo8/success.html')
 
         except ValueError:
             messages.success(request, 'Введите корректный год отчета')

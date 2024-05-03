@@ -11,4 +11,5 @@ urlpatterns = [
     path('delete_all_reports/', views.delete_all_reports, name='delete_all_reports'),
     path('files_list/', views.files_list, name='files_list'),
     path('file_detail/<int:id>/', views.file_detail, name='file_detail'),
+    path('success/', views.success, name='success'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
