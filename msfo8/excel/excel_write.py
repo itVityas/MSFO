@@ -149,7 +149,7 @@ def write_all_date(date, report_name):
     write_bill(workbook, 1001, date, report_name)
     write_bill(workbook, 1002, date, report_name)
     datetime_now = datetime.datetime.now()
-    wb_filename = datetime_now.strftime('data - %H:%M:%S.xlsx')
+    wb_filename = datetime_now.strftime('data - %Y.%m.%d, %H:%M:%S.xlsx')
     wb_path = os.path.join(settings.BASE_DIR, 'static', 'xlsx', wb_filename)
     workbook.save(wb_path)
     return wb_path
