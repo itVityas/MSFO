@@ -1,6 +1,6 @@
 import datetime
-from openpyxl import load_workbook, Workbook, utils
-from openpyxl.styles import PatternFill, Alignment, Font, numbers
+from openpyxl import load_workbook, Workbook
+from openpyxl.styles import Alignment, Font, numbers
 from msfo8.models import Entrance, EGIL
 from msfo8.excel.utils import get_report
 from django.conf import settings

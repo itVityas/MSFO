@@ -2,7 +2,6 @@ from .models import Files, Material, Store
 from msfo8.excel.utils import write_all_date_bd, create_report
 from msfo8.excel.excel_write import write_all_date
 import datetime
-import shutil
 import os
 from celery import shared_task
 
