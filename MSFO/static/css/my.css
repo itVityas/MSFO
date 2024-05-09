@@ -1,0 +1,5 @@
+.several-columns {
+  -webkit-column-count: 4; /* для Safari и Chrome */
+  -moz-column-count: 4; /* для Firefox */
+  column-count: 4;
+}

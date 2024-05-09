@@ -1,0 +1,49 @@
+version: '3.5'
+networks:
+ internal-network:
+
+services:
+ 
+#  bd:
+#   build: ./images/mysql
+#   command: --default-authentication-plugin=mysql_native_password
+#   #restart: always
+#   ports:
+#    - 3307:3306
+#   networks:
+#    - internal-network
+
+#  phpmyadmin:
+#   image: phpmyadmin:5.1.1
+#   #restart: always
+#   ports:
+#    - 8003:80
+#   environment:
+#    - PMA_ARBITRARY=0
+#    - PMA_VERBOSE=bd
+#    - PMA_HOSTS=bd
+#    - TZ=Europe/Minsk
+#   networks:
+#    - internal-network
+#   depends_on:
+#    - bd
+
+ django:
+    build: ./images/python
+    command: python manage.py runserver 0.0.0.0:8100
+    #restart: always
+    volumes:
+      - ./MSFO/:/code/MSFO
+    networks:
+      - internal-network
+    ports:
+      - 8100:8100
+    depends_on:
+      #- bd
+      - redis
+
+ redis:
+    image: redis
+    #restart: always
+    networks:
+       - internal-network
