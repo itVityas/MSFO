@@ -17,6 +17,6 @@ To run this app:
 
 
 To run in Docker-compose
-docker-compose up
+docker compose up
 
 8100 - app, 8003 - phpmyadmin
