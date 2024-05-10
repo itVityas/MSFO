@@ -214,6 +214,4 @@ ENV/
 
 # End of https://www.gitignore.io/api/macos,linux,django,python,pycharm
 
-/static/xlsx
-/adjustment8/migrations/
-/msfo8/migrations/
+/MSFO/static/xlsx/*.xlsx

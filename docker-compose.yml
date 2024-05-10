@@ -1,6 +1,7 @@
 version: '3.5'
 networks:
- internal-network:
+  internal-network:
+
 
 services:
  
@@ -28,8 +29,9 @@ services:
 #   depends_on:
 #    - bd
 
- django:
+ msfo:
     build: ./images/python
+    container_name: mfso
     command: python manage.py runserver 0.0.0.0:8100
     #restart: always
     volumes:
@@ -44,6 +46,18 @@ services:
 
  redis:
     image: redis
+    container_name: redis
     #restart: always
     networks:
        - internal-network
+  
+ celery:
+    build: ./images/python
+    container_name: celery
+    command: python -m celery -A MSFO worker
+    depends_on:
+      - redis
+    networks:
+      - internal-network
+    volumes:
+      - ./MSFO/:/code/MSFO  
