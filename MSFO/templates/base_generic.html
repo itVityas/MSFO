@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang='en'>
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MSFO">
+    <meta name="author" content="VITYAZ">
+    <title>MSFO</title>
+    <link href="{%static 'css/bootstrap.min.css'%}" rel="stylesheet">
+    <link href="{%static 'css/headers.css'%}" rel="stylesheet">
+    <link href="{%static 'css/navbar.css'%}" rel="stylesheet">
+    <link href="{%static 'css/main.css'%}" rel="stylesheet">
+    
+</head>
+
+<body>
+    {% block header %}
+        <header class="d-flex flex-wrap align-items-center justify-content-center py-3 mb-1 border-bottom" style="background-image: url('{%static 'img/img1_header.png'%}'); background-size: 100%;">
+            <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="#" class="nav-link px-2 link-secondary">
+                    <h1 class="text-light">VITYAZ MSFO</h1></a></li>
+            </ul>
+        </header>
+
+        <div class="container-fluid" style="font-size: 14px;">
+            <nav class="navbar navbar-expand-sm navbar-light bg-light rounded border" style="--bs-navbar-padding-y:0;">  
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#" style="font-size: 14px;">Home</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
+                      <span class="navbar-toggler-icon"></span>
+                    </button>      
+                <div class="collapse navbar-collapse">
+                  <ul class="navbar-nav ms-auto mb-2 mb-lg-0 ">
+                    <li class="nav-item">
+                      <a class="nav-link active" href="#">Instruction</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link active" href="#" >Reports</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link active" href="#">Contacts</a>
+                    </li>
+                  </ul>
+                </div>
+            </div>
+            </nav>
+        </div>        
+
+    {% endblock %}
+
+    {% block content %}
+    {% endblock %}
+
+    {% block footer %}
+    {% endblock %}
+
+
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

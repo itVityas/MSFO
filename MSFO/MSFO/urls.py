@@ -24,4 +24,4 @@ urlpatterns = [
     path('', views.start_page, name='start_page'),
     path('admin/', admin.site.urls),
     path('msfo8/', include('msfo8.urls'))
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]

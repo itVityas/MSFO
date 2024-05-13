@@ -1,0 +1,22 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+<div class="row">
+    <div class="col-5">
+    <img src="{%static 'img/img2.jpg'%}" alt="Parrot" style="height:70vh;" class="rounded-4">
+    </div>
+
+    <div class="col-7">
+        <div class="d-flex flex-row-reverse">
+            <h1>Create report MSFO</h1>
+        </div>
+        <div class="container mt-20">
+            <button type="button" class="btn custom-button rounded-5" onclick="document.location='{% url 'home_msfo8' %}'">Correct8</button>
+        </div>
+
+    </div>
+</div>
+</div>
+{% endblock %}  

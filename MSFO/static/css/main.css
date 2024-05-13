@@ -3,3 +3,12 @@
   -moz-column-count: 4; /* для Firefox */
   column-count: 4;
 }
+
+
+.custom-button {
+  background-color: lightgray;
+  color: black;
+  font-size: 24px;
+  padding: 10px 20px;
+}
+
