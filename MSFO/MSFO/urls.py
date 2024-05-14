@@ -16,12 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
     path('', views.start_page, name='start_page'),
+    path('contacts', views.contacts_page, name='contacts'),
     path('admin/', admin.site.urls),
     path('msfo8/', include('msfo8.urls'))
 ]

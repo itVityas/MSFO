@@ -27,7 +27,7 @@
         <div class="container-fluid" style="font-size: 14px;">
             <nav class="navbar navbar-expand-sm navbar-light bg-light rounded border" style="--bs-navbar-padding-y:0;">  
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="#" style="font-size: 14px;">Home</a>
+                    <a class="navbar-brand" href="{% url 'start_page' %}" style="font-size: 14px;">Home</a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
                       <span class="navbar-toggler-icon"></span>
                     </button>      
@@ -40,7 +40,7 @@
                       <a class="nav-link active" href="#" >Reports</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link active" href="#">Contacts</a>
+                      <a class="nav-link active" href="{% url 'contacts' %}">Contacts</a>
                     </li>
                   </ul>
                 </div>
