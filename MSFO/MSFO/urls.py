@@ -21,6 +21,7 @@ from . import views
 urlpatterns = [
     path('', views.start_page, name='start_page'),
     path('contacts', views.contacts_page, name='contacts'),
+    path('instructions', views.instructions_page, name='instructions'),
     path('admin/', admin.site.urls),
     path('msfo8/', include('msfo8.urls'))
 ]

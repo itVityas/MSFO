@@ -7,3 +7,7 @@ def start_page(request):
 
 def contacts_page(request):
     return render(request, 'contacts.html')
+
+
+def instructions_page(request):
+    return render(request, 'instructions.html')
