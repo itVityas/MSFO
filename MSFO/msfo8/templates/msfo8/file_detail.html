@@ -1,23 +1,35 @@
-{% extends 'msfo8/layout_msfo8.html' %}
+{% extends 'base_generic.html' %}
+{% load static %}
 
-{% block title %}
-    File Detail
-{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1><b>Detailed report</b></h1>
+</div>
+<div class="container mt-5">
+    <div class='row'>
+    <div class='col-2'>
+        <p>Year:</p>
+        <p>File account:</p>
+        <p>Created:</p>
+    </div>
+    <div class='col-10'>
+        <p> {{ file.year }}</p>
+        <p><a href="{% url 'download_file' file.id %}">{{ file.result_file.name }}</a></p>
+        <p>{{ file.created_at }}</p>
+    </div>
+    
+    </div>
+
+     <form method="POST" action="{% url 'file_detail' file.id %}"
+           onsubmit="return confirm('Are you sure?');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete account</button>
+    </form> 
+</div>
+{% endblock %}  
 
 {% block body %}
     <h1>Отчет</h1>
-    <p>Год отчета: {{ file.year }}</p>
-    {% if file.result_file %}
-    <p>Файл отчета: <a href="{% url 'download_file' file.id %}">{{ file.result_file.name }}</a></p>
-    {% else %}
-    <p>Result File: No result file</p>
-    {% endif %}
-    <p>Создан в: {{ file.created_at }}</p>
-
-     <form method="POST" action="{% url 'file_detail' file.id %}"
-           onsubmit="return confirm('Вы уверены, что хотите удалить этот отчет?');">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Удалить отчет</button>
-    </form>
+    
 
 {% endblock %}

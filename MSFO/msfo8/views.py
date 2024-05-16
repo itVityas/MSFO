@@ -3,7 +3,6 @@ from .models import Files
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
-import shutil
 import os
 from msfo8.tasks import crete_report_task
 
@@ -64,16 +63,6 @@ def download_file(request, id):
         return response
     else:
         return HttpResponse('File not found.')
-
-
-def delete_all_reports(request):
-    if request.method == 'POST':
-        Files.objects.all().delete()
-        directory = 'static/xlsx'
-        shutil.rmtree(directory, ignore_errors=True)
-        os.makedirs(directory)
-        return render(request, 'msfo8/home.html')
-    return render(request, 'msfo8/delete_all_reports.html')
 
 
 def files_list(request):
