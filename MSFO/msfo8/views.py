@@ -1,17 +1,15 @@
 from django.shortcuts import render, redirect
-from .models import Files, Material, Store
+from .models import Files
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
-from msfo8.excel.utils import write_all_date_bd, create_report
-from msfo8.excel.excel_write import write_all_date
-import datetime
 import shutil
 import os
 from msfo8.tasks import crete_report_task
 
+
 def home(request):
-    return render(request, 'msfo8/home.html')
+    return render(request, 'msfo8/report1002.html')
 
 
 def upload_files(request):

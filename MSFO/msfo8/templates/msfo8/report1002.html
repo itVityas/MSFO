@@ -1,0 +1,10 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <button type="button" class="btn custom-button-report rounded-5" onclick="document.location='{% url 'upload_files' %}'">Generate a report</button>
+    <p></p><p></p>
+    <button type="button" class="btn custom-button-report rounded-5" onclick="document.location='{% url 'files_list' %}'">Created reports</button>
+</div>
+{% endblock %}  

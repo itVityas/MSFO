@@ -1,22 +1,22 @@
-{% extends 'msfo8/layout_msfo8.html' %}
+{% extends 'base_generic.html' %}
+{% load static %}
 
-{% block title %}
-    Формирование отчета
-{% endblock %}
-
-{% block body %}
-    <h1>Формирование отчета</h1>
+{% block content %}
+<div class="container">
+    <h1><b>Generate a report "Correct 10.01, 10.02"</b></h1>
+</div>
+<div class="container-fluid">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="file1">Файл 1:</label>
-        <input type="file" name="file1" id="file1" required>
-        <br><br>
-        <label for="file2">Файл 2:</label>
-        <input type="file" name="file2" id="file2" required>
-        <br><br>
-        <label for="year_report">Год отчета:</label>
-        <input type="text" name="year_report" id="year_report" required>
-        <br><br>
-        <input type="submit" value="Загрузить">
-    </form>
-{% endblock %}
+        <div class="input-group mb-3">
+            <input type="file" class="custom-file" name="file1" id="file1" required>
+            <label class="mt-4">account 10.1</label>
+        </div>
+        <div class="input-group mb-3">
+            <input type="file" class="custom-file" name="file2" id="file2" required>
+            <label class="mt-4">account 10.2</label>
+        </div>
+        <input class="form-control form-control-lg" type="text" placeholder="Account year" aria-label="Enter account year" style="width:700px;">
+        <button type="button" class="btn custom-button-report rounded-5 mt-4" onclick="document.location='{% url 'home_msfo8' %}'"><b>Generate</b></button>
+</div>
+{% endblock %}  
