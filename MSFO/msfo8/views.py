@@ -16,6 +16,7 @@ def upload_files(request):
     if request.method == 'POST':
 
         try:
+
             year_report = int(request.POST.get('year_report'))
             if 1980 > year_report or 2100 < year_report:
                 raise ValueError
