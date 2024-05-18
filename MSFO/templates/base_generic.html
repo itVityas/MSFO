@@ -17,17 +17,17 @@
 
 <body>
     {% block header %}
-        <header class="d-flex flex-wrap align-items-center justify-content-center py-3 mb-1 border-bottom" style="background-image: url('{%static 'img/img1_header.png'%}'); background-size: 100%;">
+        <header class="d-flex flex-wrap align-items-center justify-content-center py-3 mb-1 border-bottom" style="background-image: url('{%static 'img/img1_header.png'%}'); background-size: 100%; height: 160px;">
             <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="#" class="nav-link px-2 link-secondary">
-                    <h1 class="text-light">VITYAZ MSFO</h1></a></li>
+                    <h1 class="text-light" style="font-size:60px"><b>VITYAZ MSFO</b></h1></a></li>
             </ul>
         </header>
 
-        <div class="container-fluid" style="font-size: 14px;">
+        <div class="container-fluid" style="font-size: 18px;">
             <nav class="navbar navbar-expand-sm navbar-light bg-light rounded border" style="--bs-navbar-padding-y:0;">  
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="{% url 'start_page' %}" style="font-size: 14px;">Home</a>
+                    <a class="navbar-brand" href="{% url 'start_page' %}" style="font-size: 18px;">Home</a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
                       <span class="navbar-toggler-icon"></span>
                     </button>      
