@@ -54,7 +54,7 @@ services:
  celery:
     build: ./images/python
     container_name: celery1
-    command: python -m celery -A MSFO worker
+    command: python -m celery -A main worker
     depends_on:
       - redis
     networks:
