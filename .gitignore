@@ -8,7 +8,7 @@
 *.pyc
 __pycache__/
 local_settings.py
-MSFO/db.sqlite3
+msfo_django/db.sqlite3
 db.sqlite3-journal
 media
 
@@ -214,4 +214,4 @@ ENV/
 
 # End of https://www.gitignore.io/api/macos,linux,django,python,pycharm
 
-/MSFO/static/xlsx/*.xlsx
+/msfo_django/static/xlsx/*.xlsx
