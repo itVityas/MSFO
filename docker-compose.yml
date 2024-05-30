@@ -35,7 +35,7 @@ services:
     command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8100"
     #restart: always
     volumes:
-      - ./MSFO/:/code/MSFO
+      - ./msfo_django/:/code/MSFO
     networks:
       - internal-network
     ports:
@@ -60,4 +60,4 @@ services:
     networks:
       - internal-network
     volumes:
-      - ./MSFO/:/code/MSFO  
+      - ./msfo_django/:/code/MSFO
