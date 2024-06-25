@@ -88,7 +88,7 @@ DATABASES = {
         'NAME': 'msfo',
         'USER': 'msfo',
         'PASSWORD': 'gfhjkm2@',
-        'HOST': 'bd',
+        'HOST': 'db',
         'PORT': '3306',
     }
 }
