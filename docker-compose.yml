@@ -69,7 +69,8 @@ services:
     container_name: celery_container
     command: python -m celery -A main worker
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     networks:
       - internal-network
     volumes:
