@@ -1,4 +1,3 @@
-version: '3.8'
 networks:
   internal-network:
 
@@ -9,6 +8,11 @@ services:
     build: ./images/mysql
     command: --default-authentication-plugin=mysql_native_password
     container_name: mysql_container
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 #    restart: always
 #    ports:
 #      - "3307:3306"
@@ -43,12 +47,19 @@ services:
     ports:
       - "8100:8100"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
  redis:
     image: redis:7.2.4-alpine
     container_name: redis_container
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 #    restart: always
     networks:
        - internal-network
