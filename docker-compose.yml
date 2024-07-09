@@ -1,62 +1,76 @@
-version: '3.8'
 networks:
   internal-network:
 
 
 services:
- 
- bd:
+
+ db:
     build: ./images/mysql
     command: --default-authentication-plugin=mysql_native_password
-    #restart: always
-#   ports:
-#    - 3307:3306
+    container_name: mysql_container
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+#    restart: always
+#    ports:
+#      - "3307:3306"
     networks:
       - internal-network
 
  phpmyadmin:
     image: phpmyadmin:5.1.1
-    #restart: always
+#    restart: always
+    container_name: phpmyadmin_container
     ports:
-      - 8003:80
+      - "8003:80"
     environment:
       - PMA_ARBITRARY=0
-      - PMA_VERBOSE=bd
-      - PMA_HOSTS=bd
+      - PMA_VERBOSE=db
+      - PMA_HOSTS=db
       - TZ=Europe/Minsk
     networks:
       - internal-network
     depends_on:
-      - bd
+      - db
 
- msfo:
+ web:
     build: ./images/python
-    container_name: mfso1
+    container_name: django_container
     command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8100"
-    #restart: always
+#    restart: always
     volumes:
       - ./msfo_django/:/code/MSFO
     networks:
       - internal-network
     ports:
-      - 8100:8100
+      - "8100:8100"
     depends_on:
-      - bd
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
  redis:
     image: redis:7.2.4-alpine
-    container_name: redis1
-    #restart: always
+    container_name: redis_container
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+#    restart: always
     networks:
        - internal-network
-  
+
  celery:
     build: ./images/python
-    container_name: celery1
+    container_name: celery_container
     command: python -m celery -A main worker
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     networks:
       - internal-network
     volumes:

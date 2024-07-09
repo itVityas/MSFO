@@ -88,7 +88,7 @@ DATABASES = {
         'NAME': 'msfo',
         'USER': 'msfo',
         'PASSWORD': 'gfhjkm2@',
-        'HOST': 'bd',
+        'HOST': 'db',
         'PORT': '3306',
     }
 }
@@ -131,7 +131,6 @@ STATIC_URL = 'static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    "/code/MSFO/msfo_django/static/",
 ]
 
 # Default primary key field type
