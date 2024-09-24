@@ -1,6 +1,6 @@
 import datetime
 from openpyxl import load_workbook
-from msfo8.models import Bill, Store, Material, Entrance, Report
+from msfo8.models import Bill, Store, Material, Entrance, Report, Files
 
 
 class CellException(Exception):
@@ -63,7 +63,7 @@ def date_convert(date: str):
     return date
 
 
-def write_all_date_bd(path, report_name):
+def write_all_date_bd(path, report_name,  id_file: Files):
     wb = load_workbook(f'{path}', data_only=True)
     wb_list = wb.active
     line = 16
@@ -79,25 +79,30 @@ def write_all_date_bd(path, report_name):
             name, code, measuring = read_material(line, wb_list)
             if measuring is None:
                 break
-            id_material, created = Material.objects.get_or_create(name=name, code=code,
-                                                                  measuring=measuring)
+            id_material, created = Material.objects.get_or_create(
+                name=name, code=code, measuring=measuring)
             line += 2
             flag_material = True
             while flag_material:
                 try:
                     date, all_price, count = read_date(line, wb_list)
                     line += 2
-                    Entrance.objects.create(id_material=id_material, id_report=id_report, id_bill=id_bill,
-                                            id_store=id_store, date=date, all_price=all_price, count=count)
-                except IndexError:
-                    flag_material = False
-                except ValueError:
+                    Entrance.objects.create(
+                        id_material=id_material,
+                        id_report=id_report,
+                        id_bill=id_bill,
+                        id_store=id_store,
+                        id_file=id_file,  # Указываем связь с файлом
+                        date=date,
+                        all_price=all_price,
+                        count=count
+                    )
+                except (IndexError, ValueError):
                     flag_material = False
                 except CellException:
                     line += 2
                     continue
     wb.close()
-    return
 
 
 # create_report(name='2023', date_necessity=datetime.date(2021, 12, 31))

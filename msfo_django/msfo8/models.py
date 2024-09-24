@@ -51,19 +51,6 @@ class Material(models.Model):
         return f"{self.name}"
 
 
-class Entrance(models.Model):
-    id_material = models.ForeignKey(Material, on_delete=models.CASCADE)
-    id_report = models.ForeignKey(Report, on_delete=models.CASCADE)
-    id_bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
-    id_store = models.ForeignKey(Store, on_delete=models.CASCADE)
-    date = models.DateField('Receipt date')
-    count = models.DecimalField('Count', max_digits=10, decimal_places=2)
-    all_price = models.DecimalField('Cost', max_digits=15, decimal_places=2)
-
-    def __str__(self):
-        return f"{self.id_material}, {self.date}"
-
-
 class Files(models.Model):
     year = models.IntegerField('Year report')
     result_file = models.FileField(upload_to=f'static/xlsx/%Y-%m-%d', blank=True, null=True)
@@ -71,3 +58,17 @@ class Files(models.Model):
 
     def __str__(self):
         return f"{self.year}, {self.result_file}"
+
+
+class Entrance(models.Model):
+    id_material = models.ForeignKey(Material, on_delete=models.CASCADE)
+    id_report = models.ForeignKey(Report, on_delete=models.CASCADE)
+    id_bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
+    id_store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    id_file = models.ForeignKey(Files, on_delete=models.CASCADE)
+    date = models.DateField('Receipt date')
+    count = models.DecimalField('Count', max_digits=10, decimal_places=2)
+    all_price = models.DecimalField('Cost', max_digits=15, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.id_material}, {self.date}"
