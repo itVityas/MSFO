@@ -1,7 +1,7 @@
 import datetime
-from openpyxl import load_workbook, Workbook, utils
-from openpyxl.styles import PatternFill, Alignment, Font, numbers
-from msfo8.models import Entrance, EGIL
+from openpyxl import load_workbook, Workbook
+from openpyxl.styles import Alignment, Font, numbers
+from msfo8.models import Entrance, EGIL, Files
 from msfo8.excel.utils import get_report
 from django.conf import settings
 import os
@@ -99,10 +99,19 @@ def write_header(wb_list, report_name):
     wb_list.cell(row=1, column=14, value=date_ig2014)
 
 
-def write_data(wb_list, date, num_store):
-    entrances = Entrance.objects.select_related('id_material', 'id_report',
-                                                'id_bill', 'id_store').filter(id_bill__number=num_store)
+def write_data(wb_list, date: str, num_store: int, id_file: Files) -> None:
+    """
+    Записывает данные в лист Excel из базы данных.
 
+    Параметры:
+        wb_list: Лист Excel.
+        date (str): Дата отчета.
+        num_store (int): Номер склада.
+        id_file (Files): Экземпляр модели Files для фильтрации данных.
+    """
+    entrances = Entrance.objects.select_related(
+        'id_material', 'id_report', 'id_bill', 'id_store'
+    ).filter(id_bill__number=num_store, id_file=id_file)
     line = 3
     for row_num, entrance in enumerate(entrances, 3):
         (price, write_off, reclass, necessity_reserve, ig2014, cost_msfo, write_up, cost_write_off,
@@ -135,19 +144,19 @@ def write_data(wb_list, date, num_store):
     change_number_format(wb_list, line)
 
 
-def write_bill(workbook, num_bill, date, report_name):
+def write_bill(workbook, num_bill, date, report_name, id_file: Files):
     wb_list = workbook.create_sheet(f'{num_bill}-{date}')
     change_column_wight(wb_list)
     write_header(wb_list, report_name)
-    write_data(wb_list, date, num_bill)
+    write_data(wb_list, date, num_bill, id_file)
     change_font(wb_list)
 
 
-def write_all_date(date, report_name):
+def write_all_date(date, report_name, id_file: Files):
     workbook_path = os.path.join(settings.BASE_DIR, 'static', 'IG2014.xlsx')
     workbook = load_workbook(workbook_path)
-    write_bill(workbook, 1001, date, report_name)
-    write_bill(workbook, 1002, date, report_name)
+    write_bill(workbook, 1001, date, report_name, id_file)
+    write_bill(workbook, 1002, date, report_name, id_file)
     datetime_now = datetime.datetime.now()
     wb_filename = datetime_now.strftime('data - %Y.%m.%d, %H:%M:%S.xlsx')
     wb_path = os.path.join(settings.BASE_DIR, 'static', 'xlsx', wb_filename)
