@@ -8,14 +8,6 @@
 <div class="container-fluid">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="input-group mb-3">
-            <input type="file" class="custom-file" name="file1" id="file1" required>
-            <label class="mt-4">account 10.1</label>
-        </div>
-        <div class="input-group mb-3">
-            <input type="file" class="custom-file" name="file2" id="file2" required>
-            <label class="mt-4">account 10.2</label>
-        </div>
         <input class="form-control form-control-lg" type="text" placeholder="Account year" aria-label="Enter account year" style="width:700px;" name='year_report' id="year_report" required>
         <button type="submit" class="btn custom-button-report rounded-5 mt-4" onclick="document.location='{% url 'home_msfo8' %}'"><b>Generate</b></button>
 </div>

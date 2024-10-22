@@ -20,19 +20,6 @@ def upload_files(request):
             if 1980 > year_report or 2100 < year_report:
                 raise ValueError
 
-            file1 = request.FILES.get('file1')
-            file2 = request.FILES.get('file2')
-
-            path1 = os.path.join('static', 'xlsx', 'file1.xlsx')
-            with open(path1, 'wb') as file:
-                for chunk in file1.chunks():
-                    file.write(chunk)
-
-            path2 = os.path.join('static', 'xlsx', 'file2.xlsx')
-            with open(path2, 'wb') as file:
-                for chunk in file2.chunks():
-                    file.write(chunk)
-
             crete_report_task.delay(year_report)
 
             return render(request, 'msfo8/success.html')
