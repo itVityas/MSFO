@@ -3,7 +3,6 @@ from .models import Files
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
-import os
 from msfo8.tasks import crete_report_task
 
 

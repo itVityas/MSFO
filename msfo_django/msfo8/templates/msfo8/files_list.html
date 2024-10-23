@@ -9,14 +9,7 @@
             {% for file in files %}
                 <button type="button"  class="list-group-item list-group-item-action" onclick="location.href='{% url 'file_detail' file.pk %}';">{{ file.year }}  (Created at: {{ file.created_at }})</button>
             {% endfor %}
-        </ul>
+        </div>
     </div>
 </div>
 {% endblock %}  
-
-
-
-
-
-    
-

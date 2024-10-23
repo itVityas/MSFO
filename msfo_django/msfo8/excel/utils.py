@@ -37,6 +37,7 @@ def write_all_data_to_db(data_list: List[Dict], report_name: str, id_file: Files
     id_report, date_write_off, date_necessity, date_ig2014 = get_report(report_name)
 
     for data in data_list:
+
         bill_name = data.get("Счет").strip()
         bill_number = data.get("Счет").replace('.', '0').strip()
         id_bill, _ = Bill.objects.get_or_create(
