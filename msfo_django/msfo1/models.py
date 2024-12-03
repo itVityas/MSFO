@@ -10,7 +10,7 @@ class Counterparty(models.Model):
 
 class AccountMapping(models.Model):
     account_1c = models.CharField(max_length=50)
-    sorting_number = models.CharField(max_length=50)
+    sorting_number = models.IntegerField()
     db_account_number = models.CharField(max_length=50)
 
     class Meta:
