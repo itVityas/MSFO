@@ -1,19 +1,65 @@
 import requests
-from msfo1.models import AccountMapping
+from datetime import datetime
+from msfo1.models import AccountMapping, Counterparty, Debt
 
 
-def fetch_and_save_debts(start_date, end_date, account_param, type_param):
+# Получаем данные с API
+def fetch_data(start_date, end_date, account_param, type_param):
     api_url = 'http://192.168.2.2/OLYA/hs/customs/oborot62_1/'
     params = {
         'startDate': start_date,
         'endDate': end_date,
         'account': account_param,
-        'type': type_param
+        'type': f'_{type_param}'
     }
     auth = ('API', '1')
     response = requests.get(api_url, params=params, auth=auth)
     data = response.json()
     return data
+
+
+# Сохраняем данные в БД
+def save_debts_to_db(data, account_param, type_param):
+    if data is None:
+        print(f"In account {account_param} no data to save")
+        return
+
+    sorting_number = int(type_param.strip('_'))
+    account_1c = f"{account_param[:2]}.{account_param[2:]}"
+
+    # Получаем AccountMapping
+    try:
+        account_mapping = AccountMapping.objects.get(account_1c=account_1c, sorting_number=sorting_number)
+    except AccountMapping.DoesNotExist:
+        print(f"Не найдено соответствие для счёта {account_1c} с номером сортировки {sorting_number}")
+        return
+
+    for item in data:
+        # Получаем или создаём контрагента
+        counterparty_name = item.get('Субконто1Контрагент')
+        counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name)
+
+        # Получаем необходимые поля
+        debt_byn = float(item.get('СуммаОборотДт', 0))
+        debt_contract_currency = float(item.get('ВалютнаяСуммаОборотДт', 0))
+        contract_currency = item.get('Валюта')
+        date_of_debt_str = item.get('Субконто2Дата')
+        payment_term_days = int(item.get('СрокОплаты', 0))
+
+        # Парсим дату
+        date_of_debt = datetime.strptime(date_of_debt_str, '%Y-%m-%dT%H:%M:%S').date()
+
+        # Создаём и сохраняем объект Debt
+        debt = Debt(
+            counterparty=counterparty,
+            account=account_mapping,
+            debt_byn=debt_byn,
+            debt_contract_currency=debt_contract_currency,
+            contract_currency=contract_currency,
+            date_of_debt=date_of_debt,
+            payment_term_days=payment_term_days,
+        )
+        debt.save()
 
 
 def populate_account_mappings():
