@@ -1,4 +1,19 @@
+import requests
 from msfo1.models import AccountMapping
+
+
+def fetch_and_save_debts(start_date, end_date, account_param, type_param):
+    api_url = 'http://192.168.2.2/OLYA/hs/customs/oborot62_1/'
+    params = {
+        'startDate': start_date,
+        'endDate': end_date,
+        'account': account_param,
+        'type': type_param
+    }
+    auth = ('API', '1')
+    response = requests.get(api_url, params=params, auth=auth)
+    data = response.json()
+    return data
 
 
 def populate_account_mappings():
