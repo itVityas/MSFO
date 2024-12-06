@@ -3,7 +3,6 @@ from datetime import datetime
 from msfo1.models import AccountMapping, Counterparty, Debt
 
 
-# Получаем данные с API
 def fetch_data(start_date, end_date, account_param, type_param):
     api_url = 'http://192.168.2.2/OLYA/hs/customs/oborot62_1/'
     params = {
