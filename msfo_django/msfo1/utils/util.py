@@ -4,6 +4,9 @@ from msfo1.models import AccountMapping, Counterparty, Debt
 
 
 def fetch_data(start_date, end_date, account_param, type_param):
+    """
+    Тянет данные из апи
+    """
     api_url = 'http://192.168.2.2/OLYA/hs/customs/oborot62_1/'
     params = {
         'startDate': start_date,
@@ -19,6 +22,9 @@ def fetch_data(start_date, end_date, account_param, type_param):
 
 # Сохраняем данные в БД
 def save_debts_to_db(data, account_param, type_param):
+    """
+    Сохраняет данные в БД
+    """
     if data is None:
         print(f"In account {account_param} no data to save")
         return
@@ -62,6 +68,9 @@ def save_debts_to_db(data, account_param, type_param):
 
 
 def populate_account_mappings():
+    """
+    Заполняет таблицу в БД соотношением счетов в отчете с сортировкой и счетом в 1С
+    """
     mappings = [
         {'account_1c': '62.1', 'db_account_number': '6201', 'sorting_number': 1},
         {'account_1c': '62.1', 'db_account_number': '6217', 'sorting_number': 6},
