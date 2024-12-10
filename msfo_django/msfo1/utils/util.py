@@ -3,7 +3,7 @@ from datetime import datetime
 from msfo1.models import AccountMapping, Counterparty, Debt
 
 
-def fetch_data(start_date, end_date, account_param, type_param):
+def fetch_data(start_date, end_date, account_1c, sorting_number):
     """
     Тянет данные из апи
     """
@@ -11,8 +11,8 @@ def fetch_data(start_date, end_date, account_param, type_param):
     params = {
         'startDate': start_date,
         'endDate': end_date,
-        'account': account_param,
-        'type': f'_{type_param}'
+        'account': account_1c,
+        'type': sorting_number,
     }
     auth = ('API', '1')
     response = requests.get(api_url, params=params, auth=auth)
@@ -21,16 +21,14 @@ def fetch_data(start_date, end_date, account_param, type_param):
 
 
 # Сохраняем данные в БД
-def save_debts_to_db(data, account_param, type_param):
+def save_debts_to_db(data, account_1c, sorting_number):
     """
     Сохраняет данные в БД
     """
     if data is None:
-        print(f"In account {account_param} no data to save")
+        print(f"In account {account_1c} no data to save")
         return
 
-    sorting_number = int(type_param.strip('_'))
-    account_1c = f"{account_param[:2]}.{account_param[2:]}"
 
     # Получаем AccountMapping
     try:
@@ -67,31 +65,48 @@ def save_debts_to_db(data, account_param, type_param):
         debt.save()
 
 
+def pull_all_accounts(year):
+    """
+    Загружает данные в БД по всем счетам из AccountMapping за указанный год.
+    """
+    start_date = f"{year}0101"
+    end_date = f"{year}1231"
+
+    accounts = AccountMapping.objects.all()
+
+    for account_mapping in accounts:
+        account_1c = account_mapping.account_1c
+        sorting_number = account_mapping.sorting_number
+
+        data = fetch_data(start_date, end_date, account_1c, sorting_number)
+        save_debts_to_db(data, account_1c, sorting_number)
+
+
 def populate_account_mappings():
     """
     Заполняет таблицу в БД соотношением счетов в отчете с сортировкой и счетом в 1С
     """
     mappings = [
-        {'account_1c': '62.1', 'db_account_number': '6201', 'sorting_number': 1},
-        {'account_1c': '62.1', 'db_account_number': '6217', 'sorting_number': 6},
-        {'account_1c': '62.1', 'db_account_number': '6214', 'sorting_number': 7},
-        {'account_1c': '62.9', 'db_account_number': '6204', 'sorting_number': 8},
-        {'account_1c': '62.10', 'db_account_number': '6205', 'sorting_number': 0},
-        {'account_1c': '62.11', 'db_account_number': '6201', 'sorting_number': 1},
-        {'account_1c': '62.13', 'db_account_number': '6206', 'sorting_number': 4},
-        {'account_1c': '62.18', 'db_account_number': '6210', 'sorting_number': 0},
-        {'account_1c': '62.19', 'db_account_number': '6212', 'sorting_number': 0},
-        {'account_1c': '62.20', 'db_account_number': '6213', 'sorting_number': 2},
-        {'account_1c': '62.21', 'db_account_number': '6225', 'sorting_number': 9},
-        {'account_1c': '62.22', 'db_account_number': '6225', 'sorting_number': 9},
-        {'account_1c': '62.25', 'db_account_number': '6253', 'sorting_number': 5},
-        {'account_1c': '62.26', 'db_account_number': '6213', 'sorting_number': 2},
-        {'account_1c': '62.27', 'db_account_number': '6238', 'sorting_number': 0},
-        {'account_1c': '62.30', 'db_account_number': '6230', 'sorting_number': 0},
-        {'account_1c': '62.31', 'db_account_number': '6220', 'sorting_number': 10},
-        {'account_1c': '62.33', 'db_account_number': '6233', 'sorting_number': 0},
-        {'account_1c': '62.51', 'db_account_number': '6213', 'sorting_number': 2},
-        {'account_1c': '62.91', 'db_account_number': '6204', 'sorting_number': 8},
+        {'account_1c': '621', 'db_account_number': '6201', 'sorting_number': '_1'},
+        {'account_1c': '621', 'db_account_number': '6217', 'sorting_number': '_6'},
+        {'account_1c': '621', 'db_account_number': '6214', 'sorting_number': '_7'},
+        {'account_1c': '629', 'db_account_number': '6204', 'sorting_number': '_8'},
+        {'account_1c': '6210', 'db_account_number': '6205', 'sorting_number': '_0'},
+        {'account_1c': '6211', 'db_account_number': '6201', 'sorting_number': '_1'},
+        {'account_1c': '6213', 'db_account_number': '6206', 'sorting_number': '_4'},
+        {'account_1c': '6218', 'db_account_number': '6210', 'sorting_number': '_0'},
+        {'account_1c': '6219', 'db_account_number': '6212', 'sorting_number': '_0'},
+        {'account_1c': '6220', 'db_account_number': '6213', 'sorting_number': '_2'},
+        {'account_1c': '6221', 'db_account_number': '6225', 'sorting_number': '_9'},
+        {'account_1c': '6222', 'db_account_number': '6225', 'sorting_number': '_9'},
+        {'account_1c': '6225', 'db_account_number': '6253', 'sorting_number': '_5'},
+        {'account_1c': '6226', 'db_account_number': '6213', 'sorting_number': '_2'},
+        {'account_1c': '6227', 'db_account_number': '6238', 'sorting_number': '_0'},
+        {'account_1c': '6230', 'db_account_number': '6230', 'sorting_number': '_0'},
+        {'account_1c': '6231', 'db_account_number': '6220', 'sorting_number': '_10'},
+        {'account_1c': '6233', 'db_account_number': '6233', 'sorting_number': '_0'},
+        {'account_1c': '6251', 'db_account_number': '6213', 'sorting_number': '_2'},
+        {'account_1c': '6291', 'db_account_number': '6204', 'sorting_number': '_8'},
     ]
 
     for mapping in mappings:
