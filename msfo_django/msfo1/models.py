@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.functional import empty
 
 
 class Counterparty(models.Model):
@@ -27,5 +28,5 @@ class Debt(models.Model):
     debt_byn = models.DecimalField(max_digits=15, decimal_places=2)
     debt_contract_currency = models.DecimalField(max_digits=15, decimal_places=2)
     contract_currency = models.CharField(max_length=10)
-    date_of_debt = models.DateField()
+    date_of_debt = models.DateField(null=True, blank=True)
     payment_term_days = models.IntegerField()
