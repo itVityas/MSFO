@@ -1,13 +1,11 @@
 import requests
 from datetime import datetime
 from msfo1.models import AccountMapping, Counterparty, Debt
+import re
 
 
 def fetch_data(start_date, end_date, account_1c, sorting_number):
-    """
-    Тянет данные из апи
-    """
-    api_url = 'http://192.168.2.2/OLYA/hs/customs/oborot62_1/'
+    api_url = 'http://192.168.2.2/Arxiv2023test/hs/customs/oborot62/'
     params = {
         'startDate': start_date,
         'endDate': end_date,
@@ -16,8 +14,29 @@ def fetch_data(start_date, end_date, account_1c, sorting_number):
     }
     auth = ('API', '1')
     response = requests.get(api_url, params=params, auth=auth)
-    data = response.json()
+
+    if not response.text.strip():
+        # Если ответ пустой, возвращаем None, выводим параметры запроса и ответа
+        print("Empty response received, returning None")
+        print("Request URL:", response.url)
+        print("Request params:", params)
+        print("Status code:", response.status_code)
+        print(response.text)
+        return None
+
+    try:
+        data = response.json()
+    except ValueError:
+        # Если не удалось распарсить, возвращаем None, выводим параметры запроса и ответа
+        print("Could not decode JSON, response:")
+        print("Request URL:", response.url)
+        print("Request params:", params)
+        print("Status code:", response.status_code)
+        print("Response text (first 200 chars):", response.text[:200])
+        return None
+
     return data
+
 
 
 # Сохраняем данные в БД
@@ -25,10 +44,9 @@ def save_debts_to_db(data, account_1c, sorting_number):
     """
     Сохраняет данные в БД
     """
-    if data is None:
+    if not data:  # Если data=None или data=[]
         print(f"In account {account_1c} no data to save")
         return
-
 
     # Получаем AccountMapping
     try:
@@ -39,18 +57,21 @@ def save_debts_to_db(data, account_1c, sorting_number):
 
     for item in data:
         # Получаем или создаём контрагента
-        counterparty_name = item.get('Субконто1Контрагент')
+        counterparty_name = item.get('Субконто1ГоловнойКонтрагентНаименование')
         counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name)
 
         # Получаем необходимые поля
-        debt_byn = float(item.get('СуммаОборотДт', 0))
-        debt_contract_currency = float(item.get('ВалютнаяСуммаОборотДт', 0))
+        debt_byn = to_float(item.get('СуммаОборотДт', 0))
+        debt_contract_currency = to_float(item.get('ВалютнаяСуммаОборотДт', '0'))
         contract_currency = item.get('Валюта')
         date_of_debt_str = item.get('Субконто2Дата')
-        payment_term_days = int(item.get('СрокОплаты', 0))
+        payment_term_days = int(item.get('СрокОплаты') or 0)
 
         # Парсим дату
-        date_of_debt = datetime.strptime(date_of_debt_str, '%Y-%m-%dT%H:%M:%S').date()
+        if date_of_debt_str != 0:
+            date_of_debt = datetime.strptime(date_of_debt_str, '%Y-%m-%dT%H:%M:%S').date()
+        else:
+            date_of_debt = None
 
         # Создаём и сохраняем объект Debt
         debt = Debt(
@@ -63,6 +84,21 @@ def save_debts_to_db(data, account_1c, sorting_number):
             payment_term_days=payment_term_days,
         )
         debt.save()
+
+
+def to_float(value, default=0.0):
+    """
+    Переводит значение во float
+    """
+    if value is None or value == '':
+        return default
+    value = value.replace(',', '.')
+    value = re.sub(r'\s+', '', value)
+    try:
+        return float(value)
+    except ValueError:
+        print(value)
+        return default
 
 
 def pull_all_accounts(year):
