@@ -12,4 +12,10 @@ To run this app:
 For create migrations: 
 + docker compose run --rm web python manage.py makemigrations
 
+For python console:
++ docker compose up -d
++ docker compose exec web python manage.py shell
+
+
+
 8100 - app, 8003 - phpmyadmin
