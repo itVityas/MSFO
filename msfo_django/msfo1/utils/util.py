@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime
-from msfo1.models import AccountMapping, Counterparty, Debt
+from msfo1.models import AccountMapping, Counterparty, Debt, ReportFile
 import re
 
 
@@ -40,7 +40,7 @@ def fetch_data(start_date, end_date, account_1c, sorting_number):
 
 
 # Сохраняем данные в БД
-def save_debts_to_db(data, account_1c, sorting_number):
+def save_debts_to_db(data, year, account_1c, sorting_number):
     """
     Сохраняет данные в БД
     """
@@ -59,6 +59,7 @@ def save_debts_to_db(data, account_1c, sorting_number):
         # Получаем или создаём контрагента
         counterparty_name = item.get('Субконто1ГоловнойКонтрагентНаименование')
         counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name)
+        report_file, _ = ReportFile.objects.get_or_create(year_report=year)
 
         # Получаем необходимые поля
         debt_byn = to_float(item.get('СуммаОборотДт', 0))
@@ -77,6 +78,7 @@ def save_debts_to_db(data, account_1c, sorting_number):
         debt = Debt(
             counterparty=counterparty,
             account=account_mapping,
+            report_file=report_file,
             debt_byn=debt_byn,
             debt_contract_currency=debt_contract_currency,
             contract_currency=contract_currency,
@@ -115,7 +117,7 @@ def pull_all_accounts(year):
         sorting_number = account_mapping.sorting_number
 
         data = fetch_data(start_date, end_date, account_1c, sorting_number)
-        save_debts_to_db(data, account_1c, sorting_number)
+        save_debts_to_db(data, year, account_1c, sorting_number)
 
 
 def populate_account_mappings():
