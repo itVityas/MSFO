@@ -94,6 +94,7 @@ def to_float(value, default=0.0):
     """
     if value is None or value == '':
         return default
+    value = str(value)
     value = value.replace(',', '.')
     value = re.sub(r'\s+', '', value)
     try:
