@@ -1,6 +1,9 @@
+import os
 from openpyxl import load_workbook
-from openpyxl.styles import Alignment, Font, numbers
-from msfo1.models import Debt
+from openpyxl.styles import Alignment, Font
+from msfo1.models import Debt, AccountMapping
+from django.conf import settings
+from datetime import datetime
 
 
 def set_column_widths(ws):
@@ -67,8 +70,8 @@ def set_headers(ws, report_date):
     ]
 
     for col_idx, header in enumerate(headers, start=1):
-        ws.cell(row=2, column=col_idx, value=header)
-        ws.cell.alignment = Alignment(horizontal="center", vertical='center', wrap_text=True)
+        cell = ws.cell(row=2, column=col_idx, value=header)
+        cell.alignment = Alignment(horizontal="center", vertical='center', wrap_text=True)
 
     ws.cell(row=1, column=9, value=report_date)
 
@@ -107,12 +110,20 @@ def set_headers(ws, report_date):
 #         current_row += 1
 
 
-def fill_data_for_account_number(ws, db_account_number):
+def fill_data_for_account_number(ws, db_account_number, report_file):
     """
     Заполнение .xlsx файла данными из бд, формулами
     """
-    debts = Debt.objects.filter(account__db_account_number=db_account_number)
+    debts = Debt.objects.filter(
+        account__db_account_number=db_account_number,
+        report_file=report_file
+    )
+
     current_row = 3
+
+    if not debts.exists():
+        ws.cell(row=3, column=1, value="Нет данных по этому счету")
+        return
 
     for debt in debts:
         ws.cell(row=current_row, column=1, value=debt.counterparty.name)
@@ -143,3 +154,47 @@ def fill_data_for_account_number(ws, db_account_number):
         ws.cell(row=current_row, column=17, value=f"=P{current_row}*N{current_row}")
 
         current_row += 1
+
+
+def create_and_fill_ws(wb, year, db_account_number, report_file):
+    """
+    Создает лист и заполняет его данными
+    """
+    ws_name = f"{db_account_number}-{year}"
+    ws = wb.create_sheet(title=ws_name)
+
+    set_headers(ws=ws, report_date=year)
+    fill_data_for_account_number(ws=ws, db_account_number=db_account_number, report_file=report_file)
+    set_font(ws=ws)
+    set_column_widths(ws=ws)
+    print(f'ws {ws_name} was successfully created.')
+
+
+def generate_msfo_report(year, report_file):
+    """
+    Создает полный отчет мсфо
+    """
+    source_file = os.path.join(settings.BASE_DIR, 'msfo1', 'static', 'source', 'msfo1.xlsx')
+    wb = load_workbook(source_file)
+
+    # Получаем уникальные db_account_number по возрастанию
+    db_accounts = (
+        AccountMapping.objects.values_list('db_account_number', flat=True)
+        .distinct()
+        .order_by('db_account_number')
+    )
+
+    for db_account_number in db_accounts:
+        create_and_fill_ws(wb, year, db_account_number, report_file)
+
+
+    # Сохраняем файл
+    file_name = datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ".xlsx"
+    output_file = os.path.join(settings.BASE_DIR, 'msfo1', 'static', 'xlsx', file_name)
+    wb.save(output_file)
+
+    # Сохраняем запись в БД
+    report_file.file_path = output_file
+    report_file.save()
+
+    print(f"Отчет сформирован и сохранен по пути: {output_file}")
