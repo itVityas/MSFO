@@ -40,7 +40,7 @@ def fetch_data(start_date, end_date, account_1c, sorting_number):
 
 
 # Сохраняем данные в БД
-def save_debts_to_db(data, year, account_1c, sorting_number):
+def save_debts_to_db(data, year, account_1c, sorting_number, report_file):
     """
     Сохраняет данные в БД
     """
@@ -59,7 +59,6 @@ def save_debts_to_db(data, year, account_1c, sorting_number):
         # Получаем или создаём контрагента
         counterparty_name = item.get('Субконто1ГоловнойКонтрагентНаименование')
         counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name)
-        report_file, _ = ReportFile.objects.get_or_create(year_report=year)
 
         # Получаем необходимые поля
         debt_byn = to_float(item.get('СуммаОборотДт', 0))
@@ -112,13 +111,23 @@ def pull_all_accounts(year):
     end_date = f"{year}1231"
 
     accounts = AccountMapping.objects.all()
+    report_file = ReportFile.objects.create(year_report=year)
 
     for account_mapping in accounts:
         account_1c = account_mapping.account_1c
         sorting_number = account_mapping.sorting_number
 
-        data = fetch_data(start_date, end_date, account_1c, sorting_number)
-        save_debts_to_db(data, year, account_1c, sorting_number)
+        data = fetch_data(start_date=start_date,
+                          end_date=end_date,
+                          account_1c=account_1c,
+                          sorting_number=sorting_number)
+
+        save_debts_to_db(data=data,
+                         year=year,
+                         account_1c=account_1c,
+                         sorting_number=sorting_number,
+                         report_file=report_file)
+    return report_file
 
 
 def populate_account_mappings():
