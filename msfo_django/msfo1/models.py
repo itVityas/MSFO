@@ -28,7 +28,10 @@ class ReportFile(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.file_path
+        if self.file_path:
+            return self.file_path
+        else:
+            return "No file path"
 
 
 class Debt(models.Model):
