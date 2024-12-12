@@ -61,8 +61,8 @@ def save_debts_to_db(data, year, account_1c, sorting_number, report_file):
         counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name)
 
         # Получаем необходимые поля
-        debt_byn = to_float(item.get('СуммаОборотДт', 0))
-        debt_contract_currency = to_float(item.get('ВалютнаяСуммаОборотДт', '0'))
+        debt_byn = to_float(item.get('СуммаОстатокДт', 0))
+        debt_contract_currency = to_float(item.get('ВалютнаяСуммаОстатокДт', '0'))
         contract_currency = item.get('Валюта')
         date_of_debt_str = item.get('Субконто2Дата')
         payment_term_days = int(item.get('СрокОплаты') or 0)
