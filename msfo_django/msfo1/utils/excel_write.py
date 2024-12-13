@@ -158,7 +158,7 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
     debts = Debt.objects.filter(
         account__db_account_number=db_account_number,
         report_file=report_file
-    )
+    ).order_by('counterparty__name')
 
     current_row = 3
 
