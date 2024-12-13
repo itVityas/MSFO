@@ -40,7 +40,7 @@ def fetch_data(start_date, end_date, account_1c, sorting_number):
 
 
 # Сохраняем данные в БД
-def save_debts_to_db(data, year, account_1c, sorting_number, report_file):
+def save_debts_to_db(data, account_1c, sorting_number, report_file):
     """
     Сохраняет данные в БД
     """
@@ -64,7 +64,7 @@ def save_debts_to_db(data, year, account_1c, sorting_number, report_file):
         debt_byn = to_float(item.get('СуммаОстатокДт', 0))
         debt_contract_currency = to_float(item.get('ВалютнаяСуммаОстатокДт', '0'))
         contract_currency = item.get('Валюта')
-        date_of_debt_str = item.get('Субконто2Дата')
+        date_of_debt_str = item.get('Субконто3Дата')
         payment_term_days = int(item.get('СрокОплаты') or 0)
 
         # Парсим дату
@@ -123,7 +123,6 @@ def pull_all_accounts(year):
                           sorting_number=sorting_number)
 
         save_debts_to_db(data=data,
-                         year=year,
                          account_1c=account_1c,
                          sorting_number=sorting_number,
                          report_file=report_file)
