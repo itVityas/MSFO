@@ -214,7 +214,8 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
     # Добавляем итоговые строки с суммами значений
     ws.cell(row=current_row, column=1, value='Итого:')
     ws.cell(row=current_row, column=3, value=f'=SUM(C3:C{current_row-1})')
-    ws.cell(row=current_row, column=13, value=f'=SUM(N3:N{current_row-1})')
+    ws.cell(row=current_row, column=14, value=f'=SUM(N3:N{current_row-1})')
+    ws.cell(row=current_row, column=15, value=f'=SUM(O3:O{current_row-1})')
     ws.cell(row=current_row, column=17, value=f'=SUM(Q3:Q{current_row-1})')
 
     # Автофильтр в ячейки заголовка
