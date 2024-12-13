@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import empty
@@ -26,6 +27,11 @@ class ReportFile(models.Model):
     file_path = models.CharField(max_length=500, unique=True, blank=True, null=True)
     year_report = models.IntegerField()
     created_at = models.DateTimeField(default=timezone.now)
+
+    def delete(self, *args, **kwargs):
+        if self.file_path and os.path.exists(self.file_path):
+            os.remove(self.file_path)
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         if self.file_path:
