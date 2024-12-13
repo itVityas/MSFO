@@ -164,7 +164,7 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
 
     # Если нет данных
     if not debts.exists():
-        ws.cell(current_row=3, column=1, value="Нет данных по этому счету")
+        ws.cell(row=current_row, column=1, value="Нет данных по этому счету")
         current_row += 1
         return current_row
 
