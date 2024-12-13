@@ -1,6 +1,6 @@
 import os
 from openpyxl import load_workbook
-from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
 from msfo1.models import Debt, AccountMapping
 from django.conf import settings
 from datetime import datetime
@@ -113,6 +113,44 @@ def set_headers(ws, report_date):
 #         current_row += 1
 
 
+def highlight_cells(ws, end_row):
+    """
+    Закрашивает ячейки C, D, F, G, H с 3-ей строки по end_row,
+    а также всю строку end_row с A по Q.
+    """
+    # Определяем заливку (желтый цвет: #FFFF00)
+    yellow_fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type='solid')
+
+    # Столбцы: A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, ..., Q=17
+    columns_to_fill = [3, 4, 6, 7, 8]  # C, D, F, G, H
+
+    # Закрашиваем C, D, F, G, H с 3 строки по end_row
+    for row in range(3, end_row + 1):
+        for col in columns_to_fill:
+            cell = ws.cell(row=row, column=col)
+            cell.fill = yellow_fill
+
+    # Закрашиваем строку end_row с A по Q
+    for col in range(1, 18):  # 1 до 17 включительно
+        cell = ws.cell(row=end_row, column=col)
+        cell.fill = yellow_fill
+
+
+def set_all_borders(ws, end_row):
+    """
+    Устанавливает тонкие границы для всех ячеек с 2 строки по current_row,
+    от столбца A (1) до Q (17).
+    """
+    thin = Side(border_style="thin", color="000000")
+    border = Border(top=thin, left=thin, right=thin, bottom=thin)
+
+    for row in range(2, end_row + 1):
+        for col in range(1, 18):  # 1 - A, 17 - Q
+            cell = ws.cell(row=row, column=col)
+            cell.border = border
+
+
+
 def fill_data_for_account_number(ws, db_account_number, report_file):
     """
     Заполнение .xlsx файла данными из бд, формулами
@@ -182,6 +220,8 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
     # Автофильтр в ячейки заголовка
     ws.auto_filter.ref = f"A2:Q{current_row}"
 
+    return current_row
+
 
 def create_and_fill_ws(wb, year, db_account_number, report_file):
     """
@@ -191,9 +231,11 @@ def create_and_fill_ws(wb, year, db_account_number, report_file):
     ws = wb.create_sheet(title=ws_name)
 
     set_headers(ws=ws, report_date=year)
-    fill_data_for_account_number(ws=ws, db_account_number=db_account_number, report_file=report_file)
+    end_row = fill_data_for_account_number(ws=ws, db_account_number=db_account_number, report_file=report_file)
     set_font(ws=ws)
     set_column_widths(ws=ws)
+    highlight_cells(ws=ws, end_row=end_row)
+    set_all_borders(ws=ws, end_row=end_row)
     print(f'ws {ws_name} was successfully created.')
 
 
