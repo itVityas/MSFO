@@ -1,6 +1,6 @@
 import os
 from openpyxl import load_workbook
-from openpyxl.styles import Alignment, Font
+from openpyxl.styles import Alignment, Font, PatternFill
 from msfo1.models import Debt, AccountMapping
 from django.conf import settings
 from datetime import datetime
@@ -72,8 +72,11 @@ def set_headers(ws, report_date):
     for col_idx, header in enumerate(headers, start=1):
         cell = ws.cell(row=2, column=col_idx, value=header)
         cell.alignment = Alignment(horizontal="center", vertical='center', wrap_text=True)
+        cell.fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type='solid')
 
-    ws.cell(row=1, column=9, value=report_date)
+    report_date = datetime(report_date, 12, 31)
+    cell_data = ws.cell(row=1, column=9, value=report_date)
+    cell_data.number_format = 'DD.MM.YYYY'
 
 
 # def fill_data_for_account_number(ws, db_account_number):
@@ -121,24 +124,39 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
 
     current_row = 3
 
+    # Если нет данных
     if not debts.exists():
         ws.cell(row=3, column=1, value="Нет данных по этому счету")
         return
 
+    # Заполняем таблицу данными
     for debt in debts:
+        # Контрагент
         ws.cell(row=current_row, column=1, value=debt.counterparty.name)
+
+        # Счет БСУ
         ws.cell(row=current_row, column=2, value=debt.account.db_account_number)
+
+        # Задолженность в BYN
         ws.cell(row=current_row, column=3, value=debt.debt_byn)
 
+        # Задолженность в валюте договора или в BYN, в зависимости от валюты
         if debt.contract_currency == 'BYN':
             ws.cell(row=current_row, column=4, value=debt.debt_byn)
         else:
             ws.cell(row=current_row, column=4, value=debt.debt_contract_currency)
 
+        # Валюта договора
         ws.cell(row=current_row, column=5, value=debt.contract_currency)
-        ws.cell(row=current_row, column=6, value=debt.date_of_debt)
+
+        # Дата возникновения задолженности
+        cell_data = ws.cell(row=current_row, column=6, value=debt.date_of_debt)
+        cell_data.number_format = 'DD.MM.YYYY'
+
+        # Контрактные сроки погашения задолженности
         ws.cell(row=current_row, column=7, value=debt.payment_term_days)
 
+        # Формулы
         ws.cell(row=current_row, column=8, value=f"=F{current_row}+G{current_row}")
         ws.cell(row=current_row, column=9, value=f"=IF(H{current_row}>$I$1,0,$I$1-H{current_row})")
         ws.cell(row=current_row, column=10, value='')
@@ -154,6 +172,15 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
         ws.cell(row=current_row, column=17, value=f"=P{current_row}*N{current_row}")
 
         current_row += 1
+
+    # Добавляем итоговые строки с суммами значений
+    ws.cell(row=current_row, column=1, value='Итого:')
+    ws.cell(row=current_row, column=3, value=f'=SUM(C3:C{current_row-1})')
+    ws.cell(row=current_row, column=13, value=f'=SUM(N3:N{current_row-1})')
+    ws.cell(row=current_row, column=17, value=f'=SUM(Q3:Q{current_row-1})')
+
+    # Автофильтр в ячейки заголовка
+    ws.auto_filter.ref = f"A2:Q{current_row}"
 
 
 def create_and_fill_ws(wb, year, db_account_number, report_file):
