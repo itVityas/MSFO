@@ -79,40 +79,6 @@ def set_headers(ws, report_date):
     cell_data.number_format = 'DD.MM.YYYY'
 
 
-# def fill_data_for_account_number(ws, db_account_number):
-#     """
-#     Заполнение .xlsx файла данными из бд, формулами
-#     """
-#
-#     debts = Debt.objects.filter(account__db_account_number=db_account_number)
-#
-#     current_row = 3
-#
-#     for debt in debts:
-#         ws.cell(row=current_row, column=1, value=debt.counterparty.name)  # A
-#         ws.cell(row=current_row, column=2, value=debt.account.db_account_number)  # B
-#         ws.cell(row=current_row, column=3, value=debt.debt_byn)  # С
-#         if debt.contract_currency == 'BYN':
-#             ws.cell(row=current_row, column=4, value=debt.debt_byn)  # D
-#         else:
-#             ws.cell(row=current_row, column=4, value=debt.debt_contract_currency)  # D
-#         ws.cell(row=current_row, column=5, value=debt.contract_currency)  # E
-#         ws.cell(row=current_row, column=6, value=debt.date_of_debt)  # F
-#         ws.cell(row=current_row, column=7, value=debt.payment_term_days)  # G
-#         ws.cell(row=current_row, column=8, value=f'=F{current_row}+G{current_row}')
-#         ws.cell(row=current_row, column=9, value=f'=ЕСЛИ(H{current_row}>$I$1;0;$I$1-H{current_row})')
-#         ws.cell(row=current_row, column=10, value=f'')
-#         ws.cell(row=current_row, column=11, value=1.314)
-#         ws.cell(row=current_row, column=12, value=f'монетарная')
-#         ws.cell(row=current_row, column=13, value=f'=ЕСЛИ(E{current_row}="BYN";1;"см")')
-#         ws.cell(row=current_row, column=14, value=f'=M{current_row}*D{current_row}')
-#         ws.cell(row=current_row, column=15, value=f'=N{current_row}-C{current_row}')
-#         ws.cell(row=current_row, column=16, value=f"=ЕСЛИ(ИЛИ(K{current_row}=1,314;K{current_row}=4,104);0;ЕСЛИ(I{current_row}>365;100%;ВПР(I{current_row};'% резервирования'!$A$3:$B$369;2;0)))")
-#         ws.cell(row=current_row, column=17, value=f'=P{current_row}*N{current_row}')
-#
-#         current_row += 1
-
-
 def highlight_cells(ws, end_row):
     """
     Закрашивает ячейки C, D, F, G, H с 3-ей строки по end_row,
@@ -149,6 +115,17 @@ def set_all_borders(ws, end_row):
             cell = ws.cell(row=row, column=col)
             cell.border = border
 
+
+def set_numeric_format(ws, end_row):
+    """
+    Устанавливает числовой формат для столбцов C, D, N, O, Q
+    с 3 по current_row.
+    """
+    numeric_columns = [3, 4, 14, 15, 17]  # C=3, D=4, N=14, O=15, Q=17
+    for row in range(3, end_row + 1):
+        for col in numeric_columns:
+            cell = ws.cell(row=row, column=col)
+            cell.number_format = '# ### ### ##0.00'
 
 
 def fill_data_for_account_number(ws, db_account_number, report_file):
@@ -220,7 +197,7 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
     ws.cell(row=current_row, column=17, value=f'=SUM(Q3:Q{current_row-1})')
 
     # Автофильтр в ячейки заголовка
-    ws.auto_filter.ref = f"A2:Q{current_row}"
+    ws.auto_filter.ref = f"A2:Q{current_row-1}"
 
     return current_row
 
@@ -238,6 +215,7 @@ def create_and_fill_ws(wb, year, db_account_number, report_file):
     set_column_widths(ws=ws)
     highlight_cells(ws=ws, end_row=end_row)
     set_all_borders(ws=ws, end_row=end_row)
+    set_numeric_format(ws=ws, end_row=end_row)
     print(f'ws {ws_name} was successfully created.')
 
 
