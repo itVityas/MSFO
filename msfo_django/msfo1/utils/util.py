@@ -17,22 +17,30 @@ def fetch_data(start_date, end_date, account_1c, sorting_number):
 
     if not response.text.strip():
         # Если ответ пустой, возвращаем None, выводим параметры запроса и ответа
+        print("\n************************************************************")
         print("Empty response received, returning None")
+        print("------------------------------------------------------------")
         print("Request URL:", response.url)
         print("Request params:", params)
         print("Status code:", response.status_code)
-        print(response.text)
+        print("Response text (first 200 chars):")
+        print(response.text[:200])
+        print("************************************************************")
         return None
 
     try:
         data = response.json()
     except ValueError:
         # Если не удалось распарсить, возвращаем None, выводим параметры запроса и ответа
+        print("\n************************************************************")
         print("Could not decode JSON, response:")
+        print("------------------------------------------------------------")
         print("Request URL:", response.url)
         print("Request params:", params)
         print("Status code:", response.status_code)
-        print("Response text (first 200 chars):", response.text[:200])
+        print("Response text (first 200 chars):")
+        print(response.text[:200])
+        print("************************************************************")
         return None
 
     return data
@@ -45,7 +53,6 @@ def save_debts_to_db(data, account_1c, sorting_number, report_file):
     Сохраняет данные в БД
     """
     if not data:  # Если data=None или data=[]
-        print(f"In account {account_1c} no data to save")
         return
 
     # Получаем AccountMapping
