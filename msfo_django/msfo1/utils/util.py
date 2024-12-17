@@ -23,9 +23,7 @@ def fetch_data(start_date, end_date, account_1c, sorting_number):
         print("Request URL:", response.url)
         print("Request params:", params)
         print("Status code:", response.status_code)
-        print("Response text (first 200 chars):")
-        print(response.text[:200])
-        print("************************************************************")
+        print("************************************************************\n")
         return None
 
     try:
@@ -40,7 +38,7 @@ def fetch_data(start_date, end_date, account_1c, sorting_number):
         print("Status code:", response.status_code)
         print("Response text (first 200 chars):")
         print(response.text[:200])
-        print("************************************************************")
+        print("************************************************************\n")
         return None
 
     return data
@@ -68,17 +66,22 @@ def save_debts_to_db(data, account_1c, sorting_number, report_file):
         counterparty, _ = Counterparty.objects.get_or_create(name=counterparty_name)
 
         # Получаем необходимые поля
-        debt_byn = to_float(item.get('СуммаОстатокДт', 0))
-        debt_contract_currency = to_float(item.get('ВалютнаяСуммаОстатокДт', '0'))
+        debt_byn = to_float(item.get('СуммаКонечныйОстаток', 0))
+        debt_contract_currency = to_float(item.get('ВалютнаяСуммаКонечныйОстаток', '0'))
         contract_currency = item.get('Валюта')
         date_of_debt_str = item.get('Субконто3Дата')
         payment_term_days = int(item.get('СрокОплаты') or 0)
 
         # Парсим дату
-        if date_of_debt_str != 0:
-            date_of_debt = datetime.strptime(date_of_debt_str, '%Y-%m-%dT%H:%M:%S').date()
+        if date_of_debt_str and date_of_debt_str.strip():
+            date_of_debt = datetime.strptime(date_of_debt_str.strip(), '%d.%m.%Y %H:%M:%S').date()
         else:
             date_of_debt = None
+
+        # Проверяем на отрицательные значения
+        if debt_byn < 0 or debt_contract_currency < 0:
+            # Если хотя бы одно отрицательное, пропускаем запись
+            continue
 
         # Создаём и сохраняем объект Debt
         debt = Debt(
