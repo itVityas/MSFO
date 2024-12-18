@@ -148,6 +148,19 @@ def msfo_account(debt):
     return ifrs_account
 
 
+def term_days_set(debt):
+    """
+    Устанавливает корректные сроки погашения задолженности, если в 1С они установлены на 0.
+    """
+    term_days = debt.payment_term_days
+    if term_days == 0:
+        if debt.contract_currency == 'BYN':
+            term_days = 30
+        else:
+            term_days = 180
+    return term_days
+
+
 def fill_data_for_account_number(ws, db_account_number, report_file):
     """
     Заполнение .xlsx файла данными из бд, формулами
@@ -190,7 +203,7 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
         cell_data.number_format = 'DD.MM.YYYY'
 
         # Контрактные сроки погашения задолженности
-        ws.cell(row=current_row, column=7, value=debt.payment_term_days)
+        ws.cell(row=current_row, column=7, value=term_days_set(debt))
 
         # Формулы
         ws.cell(row=current_row, column=8, value=f"=F{current_row}+G{current_row}")
