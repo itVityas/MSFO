@@ -216,3 +216,4 @@ ENV/
 
 /msfo_django/static/xlsx/*.xlsx
 /msfo_django/msfo1/static/xlsx/
+/msfo_django/msfo1/utils/test.py
