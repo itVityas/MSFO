@@ -128,6 +128,26 @@ def set_numeric_format(ws, end_row):
             cell.number_format = '# ### ### ##0.00'
 
 
+def msfo_account(debt):
+    """
+    Устанавливает корректный счет МСФО для контрагентов (дочерних предприятий)
+    """
+    special_counterparties = {
+        'Торговое унитарное предприятие "Галактика-трейд плюс"',
+        'ООО "МВитязь"',
+        'ООО "С-ВИТЯЗЬ"',
+        'Унитарное предприятие "О-МЕД"',
+        'ПУП "Витебск-Агро"'
+    }
+
+    if debt.counterparty.name in special_counterparties:
+        ifrs_account = '1,301'
+    else:
+        ifrs_account = '1,314'
+
+    return ifrs_account
+
+
 def fill_data_for_account_number(ws, db_account_number, report_file):
     """
     Заполнение .xlsx файла данными из бд, формулами
@@ -176,7 +196,7 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
         ws.cell(row=current_row, column=8, value=f"=F{current_row}+G{current_row}")
         ws.cell(row=current_row, column=9, value=f"=IF(H{current_row}>$I$1,0,$I$1-H{current_row})")
         ws.cell(row=current_row, column=10, value='')
-        ws.cell(row=current_row, column=11, value=1.314)
+        ws.cell(row=current_row, column=11, value=msfo_account(debt))
         ws.cell(row=current_row, column=12, value='монетарная')
         ws.cell(row=current_row, column=13, value=f'=IF(E{current_row}="BYN",1,"см")')
         ws.cell(row=current_row, column=14, value=f"=M{current_row}*D{current_row}")
