@@ -1,6 +1,6 @@
 import requests
-from datetime import datetime
-from msfo1.models import AccountMapping, Counterparty, Debt, ReportFile
+from datetime import datetime, date
+from msfo1.models import AccountMapping, Counterparty, Debt, ReportFile, CurrencyRate
 import re
 
 
@@ -172,3 +172,93 @@ def populate_account_mappings():
             sorting_number=mapping['sorting_number'],
             defaults={'db_account_number': mapping['db_account_number']}
         )
+
+
+def get_distinct_currencies_for_year(year_report):
+    """
+    Ищет все необходимые валюты
+    """
+    currencies = (Debt.objects
+                  .filter(report_file__year_report=year_report)
+                  .values_list('contract_currency', flat=True)
+                  .distinct())
+    return list(currencies)
+
+
+def fetch_currency_rate_from_api(currency, date_obj):
+    """
+    Делает запрос на АПИ с курсом валют
+    """
+    date_str = date_obj.strftime("%Y%m%d")
+    api_url = 'http://192.168.2.2/Arxiv2023test/hs/customs/currency/'
+    params = {
+        'date': date_str,
+        'currency': currency
+    }
+    auth = ('API', '1')
+    response = requests.get(api_url, params=params, auth=auth)
+
+    if not response.text.strip():
+        # Если ответ пустой, возвращаем None, выводим параметры запроса и ответа
+        print("\n************************************************************")
+        print("Empty response received, returning None")
+        print("------------------------------------------------------------")
+        print("Request URL:", response.url)
+        print("Request params:", params)
+        print("Status code:", response.status_code)
+        print("************************************************************\n")
+        return None
+
+    try:
+        data = response.json()
+    except ValueError:
+        # Если не удалось распарсить, возвращаем None, выводим параметры запроса и ответа
+        print("\n************************************************************")
+        print("Could not decode JSON, response:")
+        print("------------------------------------------------------------")
+        print("Request URL:", response.url)
+        print("Request params:", params)
+        print("Status code:", response.status_code)
+        print("Response text (first 200 chars):")
+        print(response.text[:200])
+        print("************************************************************\n")
+        return None
+
+    return data
+
+
+def save_currency_rate(currency, date_obj, data):
+    """
+    Сохраняет курс валют в БД
+    """
+    if not data:  # Если data=None или data=[]
+        return
+
+    rate = data[0].get('Курс')
+
+    obj, created = CurrencyRate.objects.get_or_create(
+        currency=currency,
+        date=date_obj,
+        defaults={'rate': rate}
+    )
+
+    if not created:
+        pass
+
+    return obj
+
+
+def update_currency_rates_for_year(year_report):
+    """
+    Объединяющая функция для сохранения курса валют в БД
+    """
+    end_date = date(year_report, 12, 31)
+
+    currencies = get_distinct_currencies_for_year(year_report)
+
+    for currency in currencies:
+        if not CurrencyRate.objects.filter(currency=currency, date=end_date).exists():
+            rate = fetch_currency_rate_from_api(currency, end_date)
+            if rate is not None:
+                save_currency_rate(currency, end_date, rate)
+

@@ -49,3 +49,18 @@ class Debt(models.Model):
     contract_currency = models.CharField(max_length=10)
     date_of_debt = models.DateField(null=True, blank=True)
     payment_term_days = models.IntegerField()
+
+    def __str__(self):
+        return f"Debt {self.id} for {self.counterparty.name}"
+
+
+class CurrencyRate(models.Model):
+    currency = models.CharField(max_length=10)
+    date = models.DateField()
+    rate = models.DecimalField(max_digits=10, decimal_places=4)
+
+    class Meta:
+        unique_together = ('currency', 'date')
+
+    def __str__(self):
+        return f"{self.currency} on {self.date}: {self.rate}"
