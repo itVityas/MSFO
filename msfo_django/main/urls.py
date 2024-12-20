@@ -23,5 +23,6 @@ urlpatterns = [
     path('contacts', views.contacts_page, name='contacts'),
     path('instructions', views.instructions_page, name='instructions'),
     path('admin/', admin.site.urls),
-    path('msfo8/', include('msfo8.urls'))
+    path('msfo8/', include('msfo8.urls')),
+    path('msfo1/', include('msfo1.urls'))
 ]

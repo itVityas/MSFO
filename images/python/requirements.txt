@@ -21,3 +21,4 @@ tzdata==2024.1
 vine==5.1.0
 wcwidth==0.2.13
 mysqlclient
+requests==2.31.0

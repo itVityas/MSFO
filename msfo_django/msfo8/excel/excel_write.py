@@ -162,6 +162,3 @@ def write_all_date(date, report_name, id_file: Files):
     wb_path = os.path.join(settings.BASE_DIR, 'static', 'xlsx', wb_filename)
     workbook.save(wb_path)
     return wb_path
-
-
-# write_all_date('2023', '2023')

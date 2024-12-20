@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'msfo8',
+    'msfo1.apps.Msfo1Config'
 ]
 
 MIDDLEWARE = [

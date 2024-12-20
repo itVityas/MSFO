@@ -1,27 +1,22 @@
 import datetime
-from openpyxl import load_workbook
 from msfo8.models import Bill, Store, Material, Entrance, Report, Files
+import requests
+from typing import List, Dict
+import re
 
 
-class CellException(Exception):
-    """Cell value is no correct"""
-    pass
-
-
-def get_or_create_bill(wb_list):
-    name = wb_list['A14'].value
-    number = name.replace('.', '0')
-    id_bill, created = Bill.objects.get_or_create(name=name, number=number)
-    return id_bill
-
-
-def get_or_create_store(line: int, wb_list):
-    name = wb_list[f'A{line}'].value
-    numbers = wb_list[f'C{line}'].value
-    if numbers is None:
-        raise CellException
-    id_store, created = Store.objects.get_or_create(name=name, numbers=numbers)
-    return id_store
+def fetch_data_from_api(start_date: str, end_date: str, account: str) -> List[Dict]:
+    url = "http://192.168.2.2/OLYA/hs/customs/oborot/"
+    params = {
+        'startDate': start_date,
+        'endDate': end_date,
+        'account': account
+    }
+    auth = ('API', '1')
+    response = requests.get(url, params=params, auth=auth)
+    response.raise_for_status()
+    data = response.json()
+    return data
 
 
 def create_report(name, date_necessity):
@@ -38,76 +33,53 @@ def get_report(name):
     return id_report, date_write_off, date_necessity, date_ig2014
 
 
-def read_material(line: int, wb_list):
-    name = wb_list[f'A{line}'].value
-    code = wb_list[f'C{line}'].value
-    measuring = wb_list[f'D{line}'].value
-    return name, code, measuring
-
-
-def read_date(line: int, wb_list):
-    date = wb_list[f'A{line}'].value
-    date = date_convert(date)                       # Index error if not correct cell
-    all_price = wb_list[f'H{line}'].value
-    if all_price is None:
-        all_price = 0
-    count = wb_list[f'H{line + 1}'].value
-    if count is None:
-        raise CellException
-    return date, all_price, count
-
-
-def date_convert(date: str):
-    date_list = date.split('.')
-    date = datetime.date(int(date_list[2]), int(date_list[1]), int(date_list[0]))
-    return date
-
-
-def write_all_date_bd(path, report_name,  id_file: Files):
-    wb = load_workbook(f'{path}', data_only=True)
-    wb_list = wb.active
-    line = 16
+def write_all_data_to_db(data_list: List[Dict], report_name: str, id_file: Files):
     id_report, date_write_off, date_necessity, date_ig2014 = get_report(report_name)
-    id_bill = get_or_create_bill(wb_list)
-    while True:
-        try:
-            id_store = get_or_create_store(line, wb_list)
-        except CellException:
-            break
-        line += 2
-        while True:
-            name, code, measuring = read_material(line, wb_list)
-            if measuring is None:
-                break
-            id_material, created = Material.objects.get_or_create(
-                name=name, code=code, measuring=measuring)
-            line += 2
-            flag_material = True
-            while flag_material:
-                try:
-                    date, all_price, count = read_date(line, wb_list)
-                    line += 2
-                    Entrance.objects.create(
-                        id_material=id_material,
-                        id_report=id_report,
-                        id_bill=id_bill,
-                        id_store=id_store,
-                        id_file=id_file,  # Указываем связь с файлом
-                        date=date,
-                        all_price=all_price,
-                        count=count
-                    )
-                except (IndexError, ValueError):
-                    flag_material = False
-                except CellException:
-                    line += 2
-                    continue
-    wb.close()
 
+    for data in data_list:
 
-# create_report(name='2023', date_necessity=datetime.date(2021, 12, 31))
+        bill_name = data.get("Счет").strip()
+        bill_number = data.get("Счет").replace('.', '0').strip()
+        id_bill, _ = Bill.objects.get_or_create(
+            name=bill_name,
+            number=bill_number
+        )
 
-# Material.objects.all().delete()
-# Store.objects.all().delete()
-# write_all_date_bd('/home/foile/MSFO/MSFO/static/xlsx/test1001.xlsx', '2023')
-# write_all_date_bd('/home/foile/MSFO/MSFO/static/xlsx/test1002.xlsx', '2023')
+        store_name = data.get("Субконто2").strip()
+        store_numbers = data.get("Субконто2Код").strip()
+        id_store, _ = Store.objects.get_or_create(
+            name=store_name,
+            numbers=store_numbers
+        )
+
+        material_name = data.get("Субконто1").strip()
+        material_code = int(data.get("Субконто1Код").strip())
+        measuring = data.get("Субконто1ЕдиницаИзмерения").strip()
+
+        id_material, _ = Material.objects.get_or_create(
+            name=material_name,
+            code=material_code,
+            measuring=measuring
+        )
+
+        date_str = data.get("Субконто3Дата")
+        count_str = str(data.get("КоличествоОборотДт")).replace(',', '.')
+        count_str = re.sub(r'\s+', '', count_str)
+        all_price_str = str(data.get("БУОборотДт")).replace(',', '.')
+        all_price_str = re.sub(r'\s+', '', all_price_str)
+
+        date = datetime.datetime.strptime(date_str, "%d.%m.%Y").date()
+        count = float(count_str)
+        all_price = float(all_price_str)
+
+        Entrance.objects.create(
+            id_material=id_material,
+            id_report=id_report,
+            id_bill=id_bill,
+            id_store=id_store,
+            id_file=id_file,
+            date=date,
+            all_price=all_price,
+            count=count
+        )
+

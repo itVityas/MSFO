@@ -6,8 +6,8 @@
     <h1>Reports</h1>
     <div class="shadow-box mt-5">
         <div class="list-group">
-            {% for file in files %}
-                <button type="button"  class="list-group-item list-group-item-action" onclick="location.href='{% url 'file_detail' file.pk %}';">{{ file.year }}  (Created at: {{ file.created_at }})</button>
+            {% for report in reports %}
+                <button type="button"  class="list-group-item list-group-item-action" onclick="location.href='{% url 'msfo1_report_detail' report.pk %}';">{{ report.year }}  (Created at: {{ report.created_at }})</button>
             {% endfor %}
         </div>
     </div>
