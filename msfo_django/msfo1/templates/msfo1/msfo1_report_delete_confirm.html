@@ -1,0 +1,16 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}
+Confirm Deletion
+{% endblock %}
+
+{% block content %}
+<h2>Confirm Deletion</h2>
+<p>Are you sure you want to delete the report for {{ report.year_report }}?</p>
+
+<form action="{% url 'msfo1_report_delete' report.pk %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a href="{% url 'msfo1_report_detail' report.pk %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

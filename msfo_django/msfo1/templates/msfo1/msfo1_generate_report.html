@@ -1,0 +1,15 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h1><b>Generate a report "Correct 1"</b></h1>
+</div>
+<div class="container-fluid">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input class="form-control form-control-lg" type="number" placeholder="Report year" aria-label="Enter account year" style="width:700px;" name='year_report' id="year_report" required>
+        <button type="submit" class="btn custom-button-report rounded-5 mt-4" onclick="document.location='{% url 'home_msfo8' %}'"><b>Generate</b></button>
+    </form>
+</div>
+{% endblock %}  

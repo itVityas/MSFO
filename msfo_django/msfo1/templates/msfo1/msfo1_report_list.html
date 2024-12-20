@@ -1,0 +1,15 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h1>Reports</h1>
+    <div class="shadow-box mt-5">
+        <div class="list-group">
+            {% for report in reports %}
+                <button type="button"  class="list-group-item list-group-item-action" onclick="location.href='{% url 'msfo1_report_detail' report.pk %}';">{{ report.year }}  (Created at: {{ report.created_at }})</button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}  
