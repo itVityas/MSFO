@@ -128,6 +128,26 @@ def set_numeric_format(ws, end_row):
             cell.number_format = '# ### ### ##0.00'
 
 
+def set_data_format(ws, end_row):
+    """
+    Устанавливает формат даты столбцов F, H строк 3 по current_row.
+    """
+    numeric_columns = [6, 8]  # F = 6, H = 8
+    for row in range(3, end_row + 1):
+        for col in numeric_columns:
+            cell_data = ws.cell(row=row, column=col)
+            cell_data.number_format = 'DD.MM.YYYY'
+
+
+def set_percent_format(ws, end_row):
+    """
+    Устанавливает процентный формат для столбца P (16) в строках с 3 по end_row.
+    """
+    for row in range(3, end_row + 1):
+        cell = ws.cell(row=row, column=16)  # P = 16
+        cell.number_format = '0%'
+
+
 def msfo_account(debt):
     """
     Устанавливает корректный счет МСФО для контрагентов (дочерних предприятий)
@@ -211,8 +231,7 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
         ws.cell(row=current_row, column=5, value=debt.contract_currency)
 
         # Дата возникновения задолженности
-        cell_data = ws.cell(row=current_row, column=6, value=debt.date_of_debt)
-        cell_data.number_format = 'DD.MM.YYYY'
+        ws.cell(row=current_row, column=6, value=debt.date_of_debt)
 
         # Контрактные сроки погашения задолженности
         ws.cell(row=current_row, column=7, value=term_days_set(debt))
@@ -271,6 +290,8 @@ def create_and_fill_ws(wb, year, db_account_number, report_file):
     highlight_cells(ws=ws, end_row=end_row)
     set_all_borders(ws=ws, end_row=end_row)
     set_numeric_format(ws=ws, end_row=end_row)
+    set_data_format(ws=ws, end_row=end_row)
+    set_percent_format(ws=ws, end_row=end_row)
     print(f'ws {ws_name} was successfully created.')
 
 
