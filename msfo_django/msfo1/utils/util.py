@@ -187,7 +187,8 @@ def get_distinct_currencies_for_year(year_report):
 
 def fetch_currency_rate_from_api(currency, date_obj):
     """
-    Делает запрос на АПИ с курсом валют
+    Делает запрос к API с курсом валют.
+    Возвращает распарсенные данные, либо None, если ответ пустой или невалидный.
     """
     date_str = date_obj.strftime("%Y%m%d")
     api_url = 'http://192.168.2.2/Arxiv2023test/hs/customs/currency/'
@@ -199,7 +200,6 @@ def fetch_currency_rate_from_api(currency, date_obj):
     response = requests.get(api_url, params=params, auth=auth)
 
     if not response.text.strip():
-        # Если ответ пустой, возвращаем None, выводим параметры запроса и ответа
         print("\n************************************************************")
         print("Empty response received, returning None")
         print("------------------------------------------------------------")
@@ -212,7 +212,6 @@ def fetch_currency_rate_from_api(currency, date_obj):
     try:
         data = response.json()
     except ValueError:
-        # Если не удалось распарсить, возвращаем None, выводим параметры запроса и ответа
         print("\n************************************************************")
         print("Could not decode JSON, response:")
         print("------------------------------------------------------------")
@@ -229,12 +228,20 @@ def fetch_currency_rate_from_api(currency, date_obj):
 
 def save_currency_rate(currency, date_obj, data):
     """
-    Сохраняет курс валют в БД
+    Сохраняет курс валют в БД.
     """
     if not data:  # Если data=None или data=[]
-        return
+        return None
 
     rate = data[0].get('Курс')
+    if rate is None:
+        return None
+
+    # Если RUB — делим на 100, т.к. из API приходит курс за 100 руб.
+    if currency.upper() == 'RUB':
+        rate = rate / 100
+    elif currency.upper() == 'CNY':
+        rate = rate / 10
 
     obj, created = CurrencyRate.objects.get_or_create(
         currency=currency,
@@ -243,14 +250,17 @@ def save_currency_rate(currency, date_obj, data):
     )
 
     if not created:
-        pass
+        obj.rate = rate
+        obj.save()
 
     return obj
 
 
 def update_currency_rates_for_year(year_report):
     """
-    Объединяющая функция для сохранения курса валют в БД
+    Объединяющая функция для сохранения курса валют в БД.
+    Берет все уникальные валюты за указанный год (по данным из Debt),
+    проверяет, есть ли курс на 31.12.<year_report>, если нет — тянет с API.
     """
     end_date = date(year_report, 12, 31)
 
