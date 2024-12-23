@@ -293,12 +293,12 @@ def generate_msfo_report(year, report_file):
 
 
     # Сохраняем файл
-    file_name = datetime.now().strftime(f"Adjustment 1 - {year}. Created at %Y.%m.%d %H:%M:%S.xlsx")
+    file_name = datetime.now().strftime(f"Adjustment 1 - {year}. Created at %Y.%m.%d %H-%M-%S.xlsx")
     output_file = os.path.join(settings.BASE_DIR, 'msfo1', 'static', 'xlsx', file_name)
     wb.save(output_file)
 
     # Сохраняем запись в БД
-    report_file.file_path = output_file
+    report_file.file_path = f"/static/xlsx/{file_name}"
     report_file.save()
 
     print(f"Отчет сформирован и сохранен по пути: {output_file}")
