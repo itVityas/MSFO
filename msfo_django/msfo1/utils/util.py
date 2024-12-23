@@ -237,7 +237,7 @@ def save_currency_rate(currency, date_obj, data):
     if rate is None:
         return None
 
-    # Если RUB — делим на 100, т.к. из API приходит курс за 100 руб.
+    # Если RUB — делим на 100. Если CNY — делим на 10.
     if currency.upper() == 'RUB':
         rate = rate / 100
     elif currency.upper() == 'CNY':
