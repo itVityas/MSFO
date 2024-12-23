@@ -1,39 +1,9 @@
 networks:
-  internal-network:
+  msfo-network:
+    external: true
 
 
 services:
-
- db:
-    build: ./images/mysql
-    command: --default-authentication-plugin=mysql_native_password
-    container_name: mysql_container
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-#    restart: always
-#    ports:
-#      - "3307:3306"
-    networks:
-      - internal-network
-
- phpmyadmin:
-    image: phpmyadmin:5.1.1
-#    restart: always
-    container_name: phpmyadmin_container
-    ports:
-      - "8003:80"
-    environment:
-      - PMA_ARBITRARY=0
-      - PMA_VERBOSE=db
-      - PMA_HOSTS=db
-      - TZ=Europe/Minsk
-    networks:
-      - internal-network
-    depends_on:
-      - db
 
  web:
     build: ./images/python
@@ -43,12 +13,10 @@ services:
     volumes:
       - ./msfo_django/:/code/MSFO
     networks:
-      - internal-network
+      - msfo-network
     ports:
       - "8100:8100"
     depends_on:
-      db:
-        condition: service_healthy
       redis:
         condition: service_healthy
 
@@ -62,7 +30,7 @@ services:
       retries: 5
 #    restart: always
     networks:
-       - internal-network
+      - msfo-network
 
  celery:
     build: ./images/python
@@ -72,6 +40,6 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - internal-network
+      - msfo-network
     volumes:
       - ./msfo_django/:/code/MSFO

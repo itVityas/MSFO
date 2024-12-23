@@ -1,9 +1,9 @@
 import os
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
-from msfo1.models import Debt, AccountMapping
+from msfo1.models import Debt, AccountMapping, CurrencyRate
 from django.conf import settings
-from datetime import datetime
+from datetime import datetime, date
 
 
 def set_column_widths(ws):
@@ -128,6 +128,26 @@ def set_numeric_format(ws, end_row):
             cell.number_format = '# ### ### ##0.00'
 
 
+def set_data_format(ws, end_row):
+    """
+    Устанавливает формат даты столбцов F, H строк 3 по current_row.
+    """
+    numeric_columns = [6, 8]  # F = 6, H = 8
+    for row in range(3, end_row + 1):
+        for col in numeric_columns:
+            cell_data = ws.cell(row=row, column=col)
+            cell_data.number_format = 'DD.MM.YYYY'
+
+
+def set_percent_format(ws, end_row):
+    """
+    Устанавливает процентный формат для столбца P (16) в строках с 3 по end_row.
+    """
+    for row in range(3, end_row + 1):
+        cell = ws.cell(row=row, column=16)  # P = 16
+        cell.number_format = '0%'
+
+
 def msfo_account(debt):
     """
     Устанавливает корректный счет МСФО для контрагентов (дочерних предприятий)
@@ -159,6 +179,18 @@ def term_days_set(debt):
         else:
             term_days = 180
     return term_days
+
+
+def get_currency_rate(currency, year_report):
+    """
+    Возвращает курс на 31.12.year_report для заданной валюты или None, если нет записи.
+    """
+    end_of_year = date(year_report, 12, 31)
+    try:
+        rate_obj = CurrencyRate.objects.get(currency=currency, date=end_of_year)
+        return rate_obj.rate
+    except CurrencyRate.DoesNotExist:
+        return None
 
 
 def fill_data_for_account_number(ws, db_account_number, report_file):
@@ -199,8 +231,7 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
         ws.cell(row=current_row, column=5, value=debt.contract_currency)
 
         # Дата возникновения задолженности
-        cell_data = ws.cell(row=current_row, column=6, value=debt.date_of_debt)
-        cell_data.number_format = 'DD.MM.YYYY'
+        ws.cell(row=current_row, column=6, value=debt.date_of_debt)
 
         # Контрактные сроки погашения задолженности
         ws.cell(row=current_row, column=7, value=term_days_set(debt))
@@ -209,9 +240,19 @@ def fill_data_for_account_number(ws, db_account_number, report_file):
         ws.cell(row=current_row, column=8, value=f"=F{current_row}+G{current_row}")
         ws.cell(row=current_row, column=9, value=f"=IF(H{current_row}>$I$1,0,$I$1-H{current_row})")
         ws.cell(row=current_row, column=10, value='')
-        ws.cell(row=current_row, column=11, value=msfo_account(debt))
+        ws.cell(row=current_row, column=11, value=msfo_account(debt))                                                    # Устанавлюваем счет МСФО
         ws.cell(row=current_row, column=12, value='монетарная')
-        ws.cell(row=current_row, column=13, value=f'=IF(E{current_row}="BYN",1,"см")')
+        # Записываем курс валюты
+        if debt.contract_currency == 'BYN':
+            ws.cell(row=current_row, column=13, value=1)
+        else:
+            year_report = report_file.year_report
+            rate = get_currency_rate(debt.contract_currency, year_report)
+            if rate is not None:
+                ws.cell(row=current_row, column=13, value=rate)
+            else:
+                ws.cell(row=current_row, column=13, value='-')
+        # Формулы
         ws.cell(row=current_row, column=14, value=f"=M{current_row}*D{current_row}")
         ws.cell(row=current_row, column=15, value=f"=N{current_row}-C{current_row}")
         ws.cell(row=current_row, column=16, value=(
@@ -249,6 +290,8 @@ def create_and_fill_ws(wb, year, db_account_number, report_file):
     highlight_cells(ws=ws, end_row=end_row)
     set_all_borders(ws=ws, end_row=end_row)
     set_numeric_format(ws=ws, end_row=end_row)
+    set_data_format(ws=ws, end_row=end_row)
+    set_percent_format(ws=ws, end_row=end_row)
     print(f'ws {ws_name} was successfully created.')
 
 
@@ -271,12 +314,12 @@ def generate_msfo_report(year, report_file):
 
 
     # Сохраняем файл
-    file_name = datetime.now().strftime(f"Adjustment 1 - {year}. Created at %Y.%m.%d %H:%M:%S.xlsx")
+    file_name = datetime.now().strftime(f"Adjustment 1 - {year}. Created at %Y.%m.%d %H-%M-%S.xlsx")
     output_file = os.path.join(settings.BASE_DIR, 'msfo1', 'static', 'xlsx', file_name)
     wb.save(output_file)
 
     # Сохраняем запись в БД
-    report_file.file_path = output_file
+    report_file.file_path = f"/static/xlsx/{file_name}"
     report_file.save()
 
     print(f"Отчет сформирован и сохранен по пути: {output_file}")
