@@ -24,7 +24,7 @@ class AccountMapping(models.Model):
 
 
 class ReportFile(models.Model):
-    file_path = models.CharField(max_length=500, unique=True, blank=True, null=True)
+    file_path = models.CharField(max_length=255, unique=True, blank=True, null=True)
     year_report = models.IntegerField()
     created_at = models.DateTimeField(default=timezone.now)
 
