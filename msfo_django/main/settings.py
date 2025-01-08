@@ -61,7 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'msfo1.middleware.QueryLoggingMiddleware',
+    # 'msfo1.middleware.QueryLoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'main.urls'
@@ -156,25 +156,25 @@ CELERY_BROKER_URL = "redis://redis:6379"
 CELERY_RESULT_BACKEND = "redis://redis:6379"
 
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-        # Пример файла:
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'db_queries.log'),
-        }
-    },
-    'loggers': {
-        # logger с именем вашего модуля (msfo1.middleware)
-        'msfo1.middleware': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',  # или INFO
-            'propagate': False,
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#         # Пример файла:
+#         'file': {
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'db_queries.log'),
+#         }
+#     },
+#     'loggers': {
+#         # logger с именем вашего модуля (msfo1.middleware)
+#         'msfo1.middleware': {
+#             'handlers': ['console', 'file'],
+#             'level': 'DEBUG',  # или INFO
+#             'propagate': False,
+#         },
+#     },
+# }
