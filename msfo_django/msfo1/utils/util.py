@@ -4,6 +4,42 @@ from msfo1.models import AccountMapping, Counterparty, Debt, ReportFile, Currenc
 import re
 
 
+
+
+def check_response(response, params):
+    """
+    Обработка ответа. При пустом/некорректном ответе возвращает none и выводит данные об этом в консоль.
+    При корректных данных - возвращает их.
+    """
+    if not response.text.strip():
+        # Если ответ пустой, возвращаем None, выводим параметры запроса и ответа
+        print("**************************************************************************************************")
+        print("Empty response received, returning None")
+        print("--------------------------------------------------------------------------------------------------")
+        print(f"Request URL: {response.url}")
+        print(f"Request params: {params}")
+        print(f"Status code: {response.status_code}")
+        print(f"Response text (first 200 chars): {response.text[:200]}")
+        print("**************************************************************************************************\n ")
+        return None
+
+    try:
+        data = response.json()
+    except ValueError:
+        # Если не удалось распарсить, возвращаем None, выводим параметры запроса и ответа
+        print("**************************************************************************************************")
+        print("Could not decode JSON, response:")
+        print("--------------------------------------------------------------------------------------------------")
+        print(f"Request URL: {response.url}")
+        print(f"Request params: {params}")
+        print(f"Status code: {response.status_code}")
+        print(f"Response text (first 200 chars): {response.text[:200]}")
+        print("**************************************************************************************************\n ")
+        return None
+
+    return data
+
+
 def fetch_data(start_date, end_date, account_1c, sorting_number):
     api_url = 'http://192.168.2.2/Arxiv2023test/hs/customs/oborot62/'
     params = {
@@ -14,33 +50,7 @@ def fetch_data(start_date, end_date, account_1c, sorting_number):
     }
     auth = ('API', '1')
     response = requests.get(api_url, params=params, auth=auth)
-
-    if not response.text.strip():
-        # Если ответ пустой, возвращаем None, выводим параметры запроса и ответа
-        print("\n************************************************************")
-        print("Empty response received, returning None")
-        print("------------------------------------------------------------")
-        print("Request URL:", response.url)
-        print("Request params:", params)
-        print("Status code:", response.status_code)
-        print("************************************************************\n")
-        return None
-
-    try:
-        data = response.json()
-    except ValueError:
-        # Если не удалось распарсить, возвращаем None, выводим параметры запроса и ответа
-        print("\n************************************************************")
-        print("Could not decode JSON, response:")
-        print("------------------------------------------------------------")
-        print("Request URL:", response.url)
-        print("Request params:", params)
-        print("Status code:", response.status_code)
-        print("Response text (first 200 chars):")
-        print(response.text[:200])
-        print("************************************************************\n")
-        return None
-
+    data = check_response(response, params)
     return data
 
 
@@ -198,31 +208,7 @@ def fetch_currency_rate_from_api(currency, date_obj):
     }
     auth = ('API', '1')
     response = requests.get(api_url, params=params, auth=auth)
-
-    if not response.text.strip():
-        print("\n************************************************************")
-        print("Empty response received, returning None")
-        print("------------------------------------------------------------")
-        print("Request URL:", response.url)
-        print("Request params:", params)
-        print("Status code:", response.status_code)
-        print("************************************************************\n")
-        return None
-
-    try:
-        data = response.json()
-    except ValueError:
-        print("\n************************************************************")
-        print("Could not decode JSON, response:")
-        print("------------------------------------------------------------")
-        print("Request URL:", response.url)
-        print("Request params:", params)
-        print("Status code:", response.status_code)
-        print("Response text (first 200 chars):")
-        print(response.text[:200])
-        print("************************************************************\n")
-        return None
-
+    data = check_response(response, params)
     return data
 
 
