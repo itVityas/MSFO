@@ -2,6 +2,7 @@ import requests
 from datetime import datetime, date
 from msfo1.models import AccountMapping, Counterparty, Debt, ReportFile, CurrencyRate
 import re
+from django.conf import settings
 
 
 
@@ -41,14 +42,14 @@ def check_response(response, params):
 
 
 def fetch_data(start_date, end_date, account_1c, sorting_number):
-    api_url = 'http://192.168.2.2/Arxiv2023test/hs/customs/oborot62/'
+    api_url = 'http://192.168.2.2/VITYAS-2/hs/customs/oborot62/'
     params = {
         'startDate': start_date,
         'endDate': end_date,
         'account': account_1c,
         'type': sorting_number,
     }
-    auth = ('API', '1')
+    auth = (settings.API_USERNAME, settings.API_PASSWORD)
     response = requests.get(api_url, params=params, auth=auth)
     data = check_response(response, params)
     return data
@@ -201,12 +202,12 @@ def fetch_currency_rate_from_api(currency, date_obj):
     Возвращает распарсенные данные, либо None, если ответ пустой или невалидный.
     """
     date_str = date_obj.strftime("%Y%m%d")
-    api_url = 'http://192.168.2.2/Arxiv2023test/hs/customs/currency/'
+    api_url = 'http://192.168.2.2/VITYAS-2/hs/customs/currency/'
     params = {
         'date': date_str,
         'currency': currency
     }
-    auth = ('API', '1')
+    auth = (settings.API_USERNAME, settings.API_PASSWORD)
     response = requests.get(api_url, params=params, auth=auth)
     data = check_response(response, params)
     return data

@@ -155,6 +155,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CELERY_BROKER_URL = "redis://redis:6379"
 CELERY_RESULT_BACKEND = "redis://redis:6379"
 
+# Данные API из ENV
+API_USERNAME = env('API_USERNAME')
+API_PASSWORD = env('API_PASSWORD')
 
 # LOGGING = {
 #     'version': 1,

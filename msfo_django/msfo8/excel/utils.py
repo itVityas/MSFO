@@ -3,16 +3,16 @@ from msfo8.models import Bill, Store, Material, Entrance, Report, Files
 import requests
 from typing import List, Dict
 import re
-
+from django.conf import settings
 
 def fetch_data_from_api(start_date: str, end_date: str, account: str) -> List[Dict]:
-    url = "http://192.168.2.2/OLYA/hs/customs/oborot/"
+    url = "http://192.168.2.2/VITYAS-2/hs/customs/oborot/"
     params = {
         'startDate': start_date,
         'endDate': end_date,
         'account': account
     }
-    auth = ('API', '1')
+    auth = (settings.API_USERNAME, settings.API_PASSWORD)
     response = requests.get(url, params=params, auth=auth)
     response.raise_for_status()
     data = response.json()
