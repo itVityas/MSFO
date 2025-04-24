@@ -1,3 +1,5 @@
+from os import replace
+
 from django.shortcuts import render, redirect
 from .models import Files
 from django.http import HttpResponse
@@ -38,6 +40,7 @@ def success(request, **kwargs):
 
 def download_file(request, id):
     files = get_object_or_404(Files, id=id)
+    file_name = str(files.result_file).replace('/code/MSFO/static/xlsx/', '')
 
     if files.result_file:
         with files.result_file.open('rb') as file:
@@ -45,7 +48,7 @@ def download_file(request, id):
 
         content_type = 'application/octet-stream'
         response = HttpResponse(file_content, content_type=content_type)
-        response['Content-Disposition'] = 'attachment; filename="result_file.xlsx"'
+        response['Content-Disposition'] = f'attachment; filename="{file_name}"'
         return response
     else:
         return HttpResponse('File not found.')

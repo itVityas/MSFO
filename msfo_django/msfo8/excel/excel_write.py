@@ -157,8 +157,7 @@ def write_all_date(date, report_name, id_file: Files):
     workbook = load_workbook(workbook_path)
     write_bill(workbook, 1001, date, report_name, id_file)
     write_bill(workbook, 1002, date, report_name, id_file)
-    datetime_now = datetime.datetime.now()
-    wb_filename = datetime_now.strftime('data - %Y.%m.%d, %H:%M:%S.xlsx')
+    wb_filename = datetime.datetime.now().strftime(f"Adjustment 8 - {date}. Created at %Y.%m.%d %H-%M-%S.xlsx")
     wb_path = os.path.join(settings.BASE_DIR, 'static', 'xlsx', wb_filename)
     workbook.save(wb_path)
     return wb_path
