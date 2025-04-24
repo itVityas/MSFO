@@ -5,12 +5,15 @@ from typing import List, Dict
 import re
 from django.conf import settings
 
-def fetch_data_from_api(start_date: str, end_date: str, account: str) -> List[Dict]:
-    url = "http://192.168.2.2/VITYAS-2/hs/customs/oborot/"
+
+# def fetch_data_from_api(start_date: str, end_date: str, account: str) -> List[Dict]:
+def fetch_data_from_api(period: str, account: str) -> List[Dict]:
+    url = "http://192.168.2.2/OLYA/hs/customs/oborot/"
     params = {
-        'startDate': start_date,
-        'endDate': end_date,
-        'account': account
+        # 'startDate': start_date,
+        # 'endDate': end_date,
+        'account': account,
+        'period': period
     }
     auth = (settings.API_USERNAME, settings.API_PASSWORD)
     response = requests.get(url, params=params, auth=auth)
