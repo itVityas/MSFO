@@ -8,7 +8,7 @@ from django.conf import settings
 
 # def fetch_data_from_api(start_date: str, end_date: str, account: str) -> List[Dict]:
 def fetch_data_from_api(period: str, account: str) -> List[Dict]:
-    url = "http://192.168.2.2/OLYA/hs/customs/oborot/"
+    url = "http://192.168.2.2/VITYAS-2/hs/customs/ostatok/"
     params = {
         # 'startDate': start_date,
         # 'endDate': end_date,
@@ -66,9 +66,9 @@ def write_all_data_to_db(data_list: List[Dict], report_name: str, id_file: Files
         )
 
         date_str = data.get("Субконто3Дата")
-        count_str = str(data.get("КоличествоОборотДт")).replace(',', '.')
+        count_str = str(data.get("КоличествоОстатокДт")).replace(',', '.')
         count_str = re.sub(r'\s+', '', count_str)
-        all_price_str = str(data.get("БУОборотДт")).replace(',', '.')
+        all_price_str = str(data.get("СуммаОстатокДт")).replace(',', '.')
         all_price_str = re.sub(r'\s+', '', all_price_str)
 
         date = datetime.datetime.strptime(date_str, "%d.%m.%Y").date()
