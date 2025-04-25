@@ -1,6 +1,6 @@
 networks:
   msfo-network:
-    external: true
+#    external: true
 
 
 services:
