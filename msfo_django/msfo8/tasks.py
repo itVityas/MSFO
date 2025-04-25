@@ -11,8 +11,8 @@ def crete_report_task(year_report: int):
     start_date = f"{year_report}0101"
     end_date = f"{year_report}1231"
 
-    data_list_101 = fetch_data_from_api(start_date, end_date, "101")
-    data_list_102 = fetch_data_from_api(start_date, end_date, "102")
+    data_list_101 = fetch_data_from_api(end_date, "101")
+    data_list_102 = fetch_data_from_api(end_date, "102")
 
     create_report(name=str(year_report), date_necessity=datetime.date(year_report - 2, 12, 31))
     files = Files(year=year_report)
